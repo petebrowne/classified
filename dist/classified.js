@@ -378,6 +378,21 @@ module("Enumerable", function() {
 });
 module("Inflector", function() {
 
+  /**
+   *
+   */
+  def("camelize", function() {
+    return this.replace(/-+(.)?/g, function(match, char) {
+      return char ? char.toUpperCase() : "";
+    });
+  });
+
+  /**
+   *
+   */
+  def("capitalize", function() {
+    return this.charAt(0).toUpperCase() + this.substring(1).toLowerCase();
+  });
 });
 classify("Array", function() {
   include(Enumerable);
@@ -469,6 +484,9 @@ classify("Array", function() {
   });
 });
 classify("Function", function() {
+  /**
+   *
+   */
   def("bind", function(context) {
     if (context === undefined) {
       return this;

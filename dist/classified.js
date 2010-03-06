@@ -206,17 +206,15 @@ var buildClass = function(superclass) {
       && callsSuper(definition)) {
 
       return function() {
-        var args = arguments,
-            currentSuper = this.callSuper;
+        var definitionArgs = arguments,
+            currentSuper   = this.callSuper;
 
         this.callSuper = function() {
-          for (var i = 0, l = arguments.length; i < l; i++) {
-            args[i] = arguments[i];
-          }
-          return superclass[name].apply(this, args);
+          var superArgs = (arguments.length > 0) ? arguments : definitionArgs;
+          return superclass[name].apply(this, superArgs);
         };
 
-        var result = definition.apply(this, arguments);
+        var result = definition.apply(this, definitionArgs);
         this.callSuper = currentSuper;
 
         return result;
@@ -350,6 +348,7 @@ module("Enumerable", function() {
     });
     return memo;
   });
+  alias("reduce", "inject");
 
   /**
    *
@@ -362,6 +361,7 @@ module("Enumerable", function() {
       return results;
     });
   });
+  alias("not", "reject");
 
   /**
    *
@@ -375,6 +375,7 @@ module("Enumerable", function() {
     });
   });
   alias("findAll", "select");
+  alias("filter", "select");
 });
 module("Inflector", function() {
 
@@ -382,7 +383,7 @@ module("Inflector", function() {
    *
    */
   def("camelize", function() {
-    return this.replace(/-+(.)?/g, function(match, char) {
+    return this.replace(/[-_]+(.)?/g, function(match, char) {
       return char ? char.toUpperCase() : "";
     });
   });
@@ -392,6 +393,43 @@ module("Inflector", function() {
    */
   def("capitalize", function() {
     return this.charAt(0).toUpperCase() + this.substring(1).toLowerCase();
+  });
+
+  /**
+   *
+   */
+  def("dasherize", function() {
+    return this.replace(/([A-Z]+)([A-Z][a-z])/g, "$1-$2")
+               .replace(/([a-z\d])([A-Z])/g, "$1-$2")
+               .replace(/_/g, "-")
+               .toLowerCase();
+  });
+
+  /**
+   *
+   */
+  def("humanize", function() {
+    return this.replace(/[_|-]+/g, " ").capitalize();
+  });
+
+  /**
+   *
+   */
+  def("titleize", function() {
+    return this.underscore().humanize().replace(/\b('?[a-z])/g, function(match, word) {
+      return word.capitalize();
+    });
+  });
+  alias("toTitleCase", "titleize");
+
+  /**
+   *
+   */
+  def("underscore", function() {
+    return this.replace(/([A-Z]+)([A-Z][a-z])/g, "$1_$2")
+               .replace(/([a-z\d])([A-Z])/g, "$1_$2")
+               .replace(/-/g, "_")
+               .toLowerCase();
   });
 });
 classify("Array", function() {
@@ -499,4 +537,12 @@ classify("Function", function() {
 });
 classify("String", function() {
   include(Inflector);
+});
+module("RegExp", function() {
+  /**
+   *
+   */
+  def("escape", function(string) {
+    return String(string).replace(/([.*+?^=!:${}()|[\]\/\\])/g, "\\$1");
+  });
 });

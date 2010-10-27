@@ -1,4 +1,4 @@
-classify('Function', function() {
+classify(Function, function() {
   def('bind', function(context) {
     if (context == null) {
       return this;

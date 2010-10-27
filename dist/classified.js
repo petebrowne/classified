@@ -1,257 +1,243 @@
-(function(window, undefined) {
+//--------------------------------------------------------------------------
+//
+//  Classify.js, version 0.10.0
+//
+//  Copyright (c) 2010, Peter Browne
+//
+//--------------------------------------------------------------------------
 
-
-var namespace = window,
-
-  currentScope = window,
-
-  currentClass = null,
-
-  inheriting = false;
-
-
-/**
- * classify([superclass][, name][, definition]) -> Class
- *   - superclass (Class): Optional superclass to inherit from.
- *   - name (String): Name of the Class.
- *   - definition (Function): The Class definition, containing method definitions.
- *
- * Creates a new Class. The Class will be defined on the _current scope_, will will
- * be either the `window` or a Module. Optionally you can pass in a Superclass as the first argument.
- */
-namespace.classify = function(superclassOrName, definitionOrName, definition) {
-  var superclass, object, name;
-
-  if (definition === undefined) {
-    name       = superclassOrName;
-    definition = definitionOrName;
-  }
-  else {
-    superclass = superclassOrName;
-    name       = definitionOrName;
-  }
-
-  if (currentScope[name] === undefined) {
-    currentScope[name] = buildClass(superclass);
-  }
-
-  currentClass = currentScope[name];
-  addMethods(currentClass.prototype, definition);
-  currentClass = null;
-
-  return currentScope[name];
-};
-
-/**
- * def([object][, name][, definition]) -> Function
- *   - object (Object): Optional object to define the method on. Defaults to the current scope.
- *   - name (String): Name of the Method.
- *   - definition (Function): The Method Definition.
- *
- * Defines a new method. The method will be defined on the _current scope_, which will
- * be either the `window`, a Class, or Module. Within the method definition, `this` will
- * refer to the _current scope_. Optionally, you can set the object to define the method on as the
- * first argument.
- */
-namespace.def = function(objectOrName, definitionOrName, definition) {
-  var object, name;
-
-  if (definition === undefined) {
-    object     = currentScope;
-    name       = objectOrName;
-    definition = definitionOrName;
-  }
-  else {
-    object = objectOrName;
-    name   = definitionOrName;
-  }
-
-  definition   = addSuperMethod(name, definition);
-  object[name] = definition;
-
-  return object[name];
-};
-
-/**
- * module(name, definition) -> Module
- *   - name (String): Name of the Module.
- *   - definition (Function): The Module Definition.
- *
- * Creates a new Module. Modules can be used as namespaces for other Modules
- * and Classes. They can also be used as a collection of method definitions
- * to be included into other Classes.
- */
-namespace.module = function(name, definition) {
-  if (currentScope[name] === undefined) {
-    currentScope[name] = {};
-  }
-
-  addMethods(currentScope[name], definition);
-
-  return definition;
-};
-
-/**
- * include([name][, module]) -> null
- *   - name (String): The name of the defintion to include the Module into.
- *   - module (Module or Object): The Module (or Object) to add to the current object scope.
- *
- * Includes the given Module methods into either the current Class or, optionally, the
- * given Class Definition. The included methods will be available on the instance of the Class.
- */
-namespace.include = function(moduleOrName, module) {
-  var object, name;
-
-  if (module === undefined) {
-    module = moduleOrName;
-    object = (currentClass) ? currentClass.prototype : currentScope;
-  }
-  else {
-    name = moduleOrName;
-    object = currentScope[name];
-
-    if (object.prototype) {
-      object = object.prototype;
-    }
-  }
-
-  addMethods(object, module);
-};
-
-/**
- * extend([name][, module]) -> null
- *   - name (String): The name of the defintion to extend with the Module.
- *   - module (Module or Object): The Module (or Object) to add to the current object scope.
- *
- * Extends the current Class or, optionally, the given Class Definition with the given
- * Module methods. The methods wil be available as Class methods.
- */
-namespace.extend = function(nameOrModule, module) {
-  var object, name;
-
-  if (module === undefined) {
-    if (currentClass !== null) {
-      module = nameOrModule;
-      object = currentClass;
-    }
-  }
-  else {
-    name   = nameOrModule;
-    object = currentScope[name];
-  }
-
-  addMethods(object, module);
-};
-
-/**
- * alias(aliasName, name) -> null
- *   - aliasName (String): The name of the alias
- *   - name (String): The name of the definition to alias. Could be
- *       a reference to a Method, Class, or Module.
- *
- * Creates a alias for the given Method, Class, or Module definition.
- */
-namespace.alias = function(aliasName, name) {
-  currentScope[aliasName] = currentScope[name];
-};
-
-
-var buildClass = function(superclass) {
+(function() {
+  
+  //----------------------------------
+  //  Internal Properties
+  //----------------------------------
+  
+  // The namespace where the methods keywords will be attached to.
+  // This will be the window in the context of the browser or exports in Node.
+  var namespace = (typeof window !== 'undefined' && window) ||
+                  (typeof exports !== 'undefined' && exports) ||
+                  this;
+  
+  // The current scope to define Classes, Modules, and Methods on.
+  var currentScope = namespace;
+  
+  // The current Class to define Methods on.
+  var currentClass = null;
+  
+  // Flag to signal when we are initializing a superclass during inheritance
+  var inheriting = false;
+  
+  //----------------------------------
+  //  Internal Methods
+  //----------------------------------
+    
+  // Builds a new Class, with optional inheritance.
+  var buildClass = function(name, superclass) {
     var newClass = function() {
-      if (!inheriting && this.initialize !== undefined) {
+      if (!inheriting && typeof this.initialize !== 'undefined') {
         this.initialize.apply(this, arguments);
       }
     };
-
-    if (superclass) {
+    
+    if (superclass != null) {
       inheriting = true;
       newClass.prototype = new superclass();
+      for (var method in superclass) {
+        if (!isKeywordProperty(method)) {
+          namespace.def(newClass, method, superclass[method]);
+        }
+      }
       inheriting = false;
     }
-
+    
     newClass.superclass  = superclass;
     newClass.constructor = newClass;
-
+    newClass.toString    = function() { return name; };
+    
     return newClass;
-  },
-
-  addMethods = function(object, methods) {
-    if (object === undefined || methods === undefined) {
+  };
+  
+  // Add the given methods to the object.
+  var addMethods = function(object, methods) {
+    if (object == null || methods == null) {
       return;
     }
-
+    
     var oldScope = currentScope;
     currentScope = object;
-
-    if (typeof methods === "function") {
+    
+    if (typeof methods === 'function') {
       methods.call(object);
     }
     else {
       for (var name in methods) {
-        def(name, methods[name]);
+        namespace.def(name, methods[name]);
       }
     }
-
+    
     currentScope = oldScope;
-  },
-
-  addSuperMethod = function(name, definition) {
-    var superclass = currentClass !== null
-      && currentClass.superclass !== undefined
-      && currentClass.superclass.prototype;
-
-    if (superclass
-      && typeof definition === "function"
-      && typeof superclass[name] === "function"
-      && callsSuper(definition)) {
-
+  };
+  
+  // If necessary add a `callSuper` method to access the superclass's method.
+  var addCallSuper = function(definition, superDefinition) {
+    if (typeof superDefinition === 'function' &&
+        typeof definition === 'function' &&
+        callsSuper(definition)) {
+          
       return function() {
         var definitionArgs = arguments,
             currentSuper   = this.callSuper;
-
+        
         this.callSuper = function() {
           var superArgs = (arguments.length > 0) ? arguments : definitionArgs;
-          return superclass[name].apply(this, superArgs);
+          return superDefinition.apply(this, superArgs);
         };
-
-        var result = definition.apply(this, definitionArgs);
+        
+        var result = definition.apply(this, definitionArgs);       
         this.callSuper = currentSuper;
-
+        
         return result;
       };
     }
-
+    
     return definition;
-  },
+  };
+  
+  // Test to see if a function contains a call to `callSuper`
+  var callsSuper = function(method) {
+    return (/\bcallSuper\b/).test(method.toString());
+  };
+  
+  // Test to see if the given property is a keyword that shouldn't be added.
+  var isKeywordProperty = function(method) {
+    return (/\b(prototype|superclass|constructor)\b/).test(method);
+  };
+    
+  //----------------------------------
+  //  Public Methods
+  //----------------------------------
+  
+  // Creates a new Class. The Class will be defined on the _current scope_, which will
+  // be either the `window` or a Module. Optionally you can pass in a Superclass as the first argument.
+  namespace.classify = function() {
+    var object, definition, superclass;
+    
+    if (arguments.length === 3) {
+      superclass = arguments[0];
+      object     = arguments[1];
+      definition = arguments[2];
+    }
+    else {
+      object     = arguments[0];
+      definition = arguments[1];
+    }
+    
+    if (typeof object === 'string') {
+      if (typeof currentScope[object] === 'undefined') {
+        currentScope[object] = buildClass(object, superclass);
+      }
+      object = currentScope[object];
+    }
+    
+    var oldClass = currentClass;
+    currentClass = object.prototype;
+    addMethods(object, definition);
+    currentClass = oldClass;
+    
+    return object;
+  };
+  
+  // Defines a new method. The method will be defined on the _current scope_, which will
+  // be either the `window`, a Class, or Module. Within the method definition, `this` will
+  // refer to the _current scope_. Optionally, you can set the object to define the method on as the
+  // first argument.
+  namespace.def = function() {
+    var object, name, definition;
+    
+    if (arguments.length === 3) {
+      object     = arguments[0];
+      name       = arguments[1];
+      definition = arguments[2];
+    }
+    else {
+      object     = currentClass || currentScope;
+      name       = arguments[0];
+      definition = arguments[1];
+    }
 
-  callsSuper = function(method) {
-    return /\bcallSuper\b/.test(method.toString());
+    definition   = addCallSuper(definition, object[name]);
+    object[name] = definition;
+    
+    return object[name];
+  };
+  
+  // Creates a new Module. Modules can be used as namespaces for other Modules
+  // and Classes. They can also be used as a collection of method definitions
+  // to be included into other Classes.
+  namespace.module = function(name, definition) {
+    if (typeof currentScope[name] === 'undefined') {
+      currentScope[name] = {};
+      currentScope[name].toString = function() { return name; };
+    }
+    
+    addMethods(currentScope[name], definition);
+    
+    return currentScope[name];
+  };
+  
+  // Includes the given Module methods into either the current Class or, optionally, the
+  // given Class Definition. The included methods will be available on the instance of the Class.
+  namespace.include = function() {
+    var object, definition;
+    
+    if (arguments.length === 2) {
+      object     = arguments[0];
+      definition = arguments[1];
+      
+      if (typeof object === 'string') {
+        object = currentScope[object];
+      }
+    }
+    else {
+      object     = currentClass || currentScope;
+      definition = arguments[0];
+    }
+    
+    addMethods(object, definition);
+  };
+  
+  // Extends the current Class or, optionally, the given Class Definition with the given
+  // Module methods. The methods wil be available as Class methods.
+  namespace.extend = function() {
+    var oldClass = currentClass;
+    currentClass = null;
+    namespace.include.apply(this, arguments);
+    currentClass = oldClass;
+  };
+  
+  // Creates a alias for the given Method, Class, or Module definition.
+  namespace.alias = function(alias, method) {
+    var object = currentClass || currentScope;
+    object[alias] = object[method];
   };
 
-})(window);
-/**
- *
- */
+})();
+// When using the Enumerable loops, throwing this object
+// will break out of the loop early;
 var $break = {};
 
-/**
- *
- */
-module("Enumerable", function() {
-  /**
-   *
-   */
+module('Enumerable', function() {
+  
+  // A function that just returns the first argument.
+  // Used internally when functions aren't given to a looping function.
   var $identity = function(item) {
     return item;
   };
-
-  /**
-   *
-   */
-  def("each", function(iterator, context) {
+  
+  def('each', function(iterator, context) {
     var index = 0;
     try {
-      this._each(function(value) {
+      this.__each__(function(value) {
         iterator.call(context, value, index++);
       });
     }
@@ -262,11 +248,8 @@ module("Enumerable", function() {
     }
     return this;
   });
-
-  /**
-   *
-   */
-  def("all", function(iterator, context) {
+  
+  def('all', function(iterator, context) {
     iterator = iterator || $identity;
     var result = true;
     this.each(function(value, index) {
@@ -277,12 +260,9 @@ module("Enumerable", function() {
     });
     return result;
   });
-  alias("every", "all");
-
-  /**
-   *
-   */
-  def("any", function(iterator, context) {
+  alias('every', 'all');
+  
+  def('any', function(iterator, context) {
     iterator = iterator || $identity;
     var result = false;
     this.each(function(value, index) {
@@ -292,25 +272,19 @@ module("Enumerable", function() {
     });
     return result;
   });
-  alias("some", "any");
-
-  /**
-   *
-   */
-  def("collect", function(iterator, context) {
+  alias('some', 'any');
+  
+  def('collect', function(iterator, context) {
     iterator = iterator || $identity;
     return this.inject([], function(results, value, index) {
       results.push(iterator.call(context, value, index));
       return results;
     });
   });
-  alias("map", "collect");
-
-  /**
-   *
-   */
-  def("detect", function(iterator, context) {
-    var result;
+  alias('map', 'collect');
+  
+  def('detect', function(iterator, context) {
+    var result = null;
     this.each(function(value, index) {
       if (iterator.call(context, value, index)) {
         result = value;
@@ -319,13 +293,10 @@ module("Enumerable", function() {
     });
     return result;
   });
-  alias("find", "detect");
-
-  /**
-   *
-   */
-  def("include", function(item) {
-    if (typeof this.indexOf === "function") {
+  alias('find', 'detect');
+  
+  def('include', function(item) {
+    if (typeof this.indexOf === 'function') {
       return this.indexOf(item) != -1;
     }
 
@@ -338,22 +309,16 @@ module("Enumerable", function() {
     });
     return found;
   });
-
-  /**
-   *
-   */
-  def("inject", function(memo, iterator, context) {
+  
+  def('inject', function(memo, iterator, context) {
     this.each(function(value, index) {
       memo = iterator.call(context, memo, value, index);
     });
     return memo;
   });
-  alias("reduce", "inject");
-
-  /**
-   *
-   */
-  def("reject", function(iterator, context) {
+  alias('reduce', 'inject');
+  
+  def('reject', function(iterator, context) {
     return this.inject([], function(results, value, index) {
       if (!iterator.call(context, value, index)) {
         results.push(value);
@@ -361,12 +326,9 @@ module("Enumerable", function() {
       return results;
     });
   });
-  alias("not", "reject");
-
-  /**
-   *
-   */
-  def("select", function(iterator, context) {
+  alias('not', 'reject');
+  
+  def('select', function(iterator, context) {
     return this.inject([], function(results, value, index) {
       if (iterator.call(context, value, index)) {
         results.push(value);
@@ -374,145 +336,67 @@ module("Enumerable", function() {
       return results;
     });
   });
-  alias("findAll", "select");
-  alias("filter", "select");
+  alias('findAll', 'select');
+  alias('filter', 'select');
 });
-module("Inflector", function() {
 
-  /**
-   *
-   */
-  def("camelize", function() {
-    return this.replace(/[-_]+(.)?/g, function(match, char) {
-      return char ? char.toUpperCase() : "";
-    });
-  });
-
-  /**
-   *
-   */
-  def("capitalize", function() {
-    return this.charAt(0).toUpperCase() + this.substring(1).toLowerCase();
-  });
-
-  /**
-   *
-   */
-  def("dasherize", function() {
-    return this.replace(/([A-Z]+)([A-Z][a-z])/g, "$1-$2")
-               .replace(/([a-z\d])([A-Z])/g, "$1-$2")
-               .replace(/_/g, "-")
-               .toLowerCase();
-  });
-
-  /**
-   *
-   */
-  def("humanize", function() {
-    return this.replace(/[_|-]+/g, " ").capitalize();
-  });
-
-  /**
-   *
-   */
-  def("titleize", function() {
-    return this.underscore().humanize().replace(/\b('?[a-z])/g, function(match, word) {
-      return word.capitalize();
-    });
-  });
-  alias("toTitleCase", "titleize");
-
-  /**
-   *
-   */
-  def("underscore", function() {
-    return this.replace(/([A-Z]+)([A-Z][a-z])/g, "$1_$2")
-               .replace(/([a-z\d])([A-Z])/g, "$1_$2")
-               .replace(/-/g, "_")
-               .toLowerCase();
-  });
-});
-classify("Array", function() {
+classify(Array, function() {
   include(Enumerable);
-
-  if (Array.prototype.forEach) {
-    alias("_each", "forEach");
-  }
-  else {
-    /**
-     *
-     */
-    def("_each", function(iterator) {
+  
+  if (typeof Array.prototype.forEach === 'undefined') {
+    def('__each__', function(iterator) {
       for (var i = 0, n = this.length; i < n; i++) {
         iterator.call(null, this[i]);
       }
     });
   }
-
-  if (!Array.prototype.indexOf) {
-    /**
-     *
-     */
-    def("indexOf", function(item) {
-      for (var i = 0, n = array.length; i < n; i++) {
-        if (array[i] === item) {
+  else {
+    alias('__each__', 'forEach');
+  }
+  
+  if (typeof Array.prototype.indexOf === 'undefined') {
+    def('indexOf', function(item) {
+      for (var i = 0, n = this.length; i < n; i++) {
+        if (this[i] === item) {
           return i;
         }
       }
       return -1;
     });
   }
-
-  if (!Array.prototype.lastIndexOf) {
-    /**
-     *
-     */
-    def("lastIndexOf", function(item) {
-      var i = array.length;
+  
+  if (typeof Array.prototype.lastIndexOf === 'undefined') {
+    def('lastIndexOf', function(item) {
+      var i = this.length;
       while (i--) {
-        if (array[i] === item) {
+        if (this[i] === item) {
           return i;
         }
       }
       return -1;
     });
   }
-
-  /**
-   *
-   */
-  def("clear", function() {
+  
+  def('clear', function() {
     this.length = 0;
     return this;
   });
-
-  /**
-   *
-   */
-  def("first", function() {
+  
+  def('first', function() {
     return this[0];
   });
-
-  /**
-   *
-   */
-  def("last", function() {
+  
+  def('last', function() {
     return this[this.length - 1];
   });
-
-  /**
-   *
-   */
-  def("compact", function() {
+  
+  def('compact', function() {
     return this.reject(function(value) {
       return value == null;
     });
   });
-
-  /**
-   *
-   */
-  def("uniq", function(sorted) {
+  
+  def('uniq', function(sorted) {
     return this.inject([], function(results, value, index) {
       if (index === 0 || (sorted ? results.last() != value : !results.include(value))) {
         results.push(value);
@@ -521,12 +405,10 @@ classify("Array", function() {
     });
   });
 });
-classify("Function", function() {
-  /**
-   *
-   */
-  def("bind", function(context) {
-    if (context === undefined) {
+
+classify(Function, function() {
+  def('bind', function(context) {
+    if (context == null) {
       return this;
     }
     var method = this;
@@ -535,14 +417,46 @@ classify("Function", function() {
     }
   });
 });
-classify("String", function() {
-  include(Inflector);
+
+classify(RegExp, function() {
+  def(this, 'escape', function(string) {
+    return String(string).replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');
+  });
 });
-module("RegExp", function() {
-  /**
-   *
-   */
-  def("escape", function(string) {
-    return String(string).replace(/([.*+?^=!:${}()|[\]\/\\])/g, "\\$1");
+
+classify(String, function() {
+  def('camelize', function() {
+    return this.replace(/[-_]+(.)?/g, function(match, char) {
+      return char ? char.toUpperCase() : '';
+    });
+  });
+  
+  def('capitalize', function() {
+    return this.charAt(0).toUpperCase() + this.substring(1).toLowerCase();
+  });
+  
+  def('dasherize', function() {
+    return this.replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
+               .replace(/([a-z\d])([A-Z])/g, '$1-$2')
+               .replace(/_/g, '-')
+               .toLowerCase();
+  });
+  
+  def('humanize', function() {
+    return this.replace(/[_|-]+/g, ' ').capitalize();
+  });
+  
+  def('titleize', function() {
+    return this.underscore().humanize().replace(/\b('?[a-z])/g, function(match, word) {
+      return word.capitalize();
+    });
+  });
+  alias('toTitleCase', 'titleize');
+  
+  def('underscore', function() {
+    return this.replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2')
+               .replace(/([a-z\d])([A-Z])/g, '$1_$2')
+               .replace(/-/g, "_")
+               .toLowerCase();
   });
 });

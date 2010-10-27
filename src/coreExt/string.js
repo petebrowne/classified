@@ -1,4 +1,4 @@
-classify('String', function() {
+classify(String, function() {
   def('camelize', function() {
     return this.replace(/[-_]+(.)?/g, function(match, char) {
       return char ? char.toUpperCase() : '';

@@ -1,25 +1,27 @@
-require 'rake'
-require 'sprockets'
 require 'packr'
 
-desc 'Builds the distribution.'
+task :default => :dist
+
+desc 'Builds the distribution'
 task :dist do
-  src_dir  = File.expand_path('../src', __FILE__)
-  dist_dir = File.expand_path('../dist', __FILE__)
-  
-  secretary = Sprockets::Secretary.new(
-    :root           => src_dir,
-    :load_path      => [ src_dir ],
-    :source_files   => [ File.join(src_dir, 'classified.js') ],
-    :strip_comments => false
+  files = %w(
+    vendor/classify-0.10.0/classify.js
+    src/modules/enumerable.js
+    src/coreExt/array.js
+    src/coreExt/function.js
+    src/coreExt/regExp.js
+    src/coreExt/string.js
   )
-  concatenation = secretary.concatenation.to_s
   
-  File.open(File.join(dist_dir, 'classified.js'), 'w') do |file|
-    file.write concatenation.strip
+  concatenation = files.map do |file|
+    File.read(file)
+  end.join("\n").strip
+  
+  File.open('dist/classified.js', 'w') do |file|
+    file.write concatenation
   end
   
-  File.open(File.join(dist_dir, 'classified.min.js'), 'w') do |file|
+  File.open('dist/classified.min.js', 'w') do |file|
     file.write Packr.pack(concatenation, :shrink_vars => true).strip
   end
 end

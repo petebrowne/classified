@@ -1,4 +1,4 @@
-classify('Array', function() {
+classify(Array, function() {
   include(Enumerable);
   
   if (typeof Array.prototype.forEach === 'undefined') {

@@ -6,6 +6,7 @@ desc 'Builds the distribution'
 task :dist do
   files = %w(
     vendor/classify-0.10.0/classify.js
+    src/classified.js
     src/modules/enumerable.js
     src/coreExt/array.js
     src/coreExt/function.js

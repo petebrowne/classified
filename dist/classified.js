@@ -222,6 +222,14 @@
   };
 
 })();
+//--------------------------------------------------------------------------
+//
+//  Classified.js, version 0.2.0
+//
+//  Copyright (c) 2010, Peter Browne
+//
+//--------------------------------------------------------------------------
+
 // When using the Enumerable loops, throwing this object
 // will break out of the loop early;
 var $break = {};

@@ -1,9 +1,6 @@
-classify("Function", function() {
-  /**
-   * 
-   */
-  def("bind", function(context) {
-    if (context === undefined) {
+classify('Function', function() {
+  def('bind', function(context) {
+    if (context == null) {
       return this;
     }
     var method = this;

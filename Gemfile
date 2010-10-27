@@ -1,3 +1,3 @@
-gem "sprockets"
-gem "jsmin"
-gem "packr"
+gem 'sprockets'
+gem 'jsmin'
+gem 'packr'

@@ -1,28 +1,41 @@
 require 'packr'
 
-task :default => :dist
+DEPENDENCIES = %w(
+  vendor/classify-0.10.0/classify.js
+)
+
+SOURCES = %w(
+  src/classified.js
+  src/modules/enumerable.js
+  src/coreExt/array.js
+  src/coreExt/function.js
+  src/coreExt/regExp.js
+  src/coreExt/string.js
+)
+
+def concat(files)
+  files.map do |file|
+    File.read(file)
+  end.join("\n").strip
+end
+
+def minify(src)
+  Packr.pack(src, :shrink_vars => true).strip
+end
+
+def write_file(file, src)
+  File.open(file, 'w') { |f| f.write src }
+end
 
 desc 'Builds the distribution'
 task :dist do
-  files = %w(
-    vendor/classify-0.10.0/classify.js
-    src/classified.js
-    src/modules/enumerable.js
-    src/coreExt/array.js
-    src/coreExt/function.js
-    src/coreExt/regExp.js
-    src/coreExt/string.js
-  )
+  dependencies = concat(DEPENDENCIES)
+  sources      = concat(SOURCES)
+  complete     = dependencies + "\n" + sources
   
-  concatenation = files.map do |file|
-    File.read(file)
-  end.join("\n").strip
-  
-  File.open('dist/classified.js', 'w') do |file|
-    file.write concatenation
-  end
-  
-  File.open('dist/classified.min.js', 'w') do |file|
-    file.write Packr.pack(concatenation, :shrink_vars => true).strip
-  end
+  write_file 'dist/classified-bare.js', sources
+  write_file 'dist/classified-bare.min.js', minify(sources)
+  write_file 'dist/classified.js', complete
+  write_file 'dist/classified.min.js', minify(complete)
 end
+task :default => :dist

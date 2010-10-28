@@ -1,41 +1,40 @@
 require 'packr'
 
-DEPENDENCIES = %w(
-  vendor/classify-0.10.0/classify.js
-)
+version = '0.2.1'
 
-SOURCES = %w(
+files = %w(
   src/classified.js
   src/modules/enumerable.js
-  src/coreExt/array.js
-  src/coreExt/function.js
-  src/coreExt/regExp.js
-  src/coreExt/string.js
+  src/ext/array.js
+  src/ext/function.js
+  src/ext/regExp.js
+  src/ext/string.js
 )
-
-def concat(files)
-  files.map do |file|
-    File.read(file)
-  end.join("\n").strip
-end
-
-def minify(src)
-  Packr.pack(src, :shrink_vars => true).strip
-end
-
-def write_file(file, src)
-  File.open(file, 'w') { |f| f.write src }
-end
 
 desc 'Builds the distribution'
 task :dist do
-  dependencies = concat(DEPENDENCIES)
-  sources      = concat(SOURCES)
-  complete     = dependencies + "\n" + sources
+  source = files.map do |file|
+    File.read(file)
+  end.join("\n")
   
-  write_file 'dist/classified-bare.js', sources
-  write_file 'dist/classified-bare.min.js', minify(sources)
-  write_file 'dist/classified.js', complete
-  write_file 'dist/classified.min.js', minify(complete)
+  source.sub!(Regexp.new(Regexp.escape('{{ version }}')), "version #{version}")
+  
+  File.open('dist/classified.js', 'w') do |file|
+    file.write source
+  end
+  
+  File.open('dist/classified.min.js', 'w') do |file|
+    file.write Packr.pack(source, :shrink_vars => true).strip
+  end
 end
 task :default => :dist
+
+desc 'Tags and releases the current version'
+task :release do
+  if %x(git ls-files -dm).split("\n").size.zero?
+    %x(git tag -am 'Version #{version}' v#{version})
+    %x(git push --tags --quiet)
+  else
+    puts 'Commit your changes first...'
+  end
+end

@@ -1,6 +1,16 @@
 require 'packr'
 
-version = '0.2.1'
+def version
+  @version ||= File.read('VERSION')
+end
+
+def guard_clean
+  if %x(git ls-files -dm).split("\n").size.zero?
+    yield
+  else
+    puts 'Commit your changes first...'
+  end
+end
 
 files = %w(
   src/classified.js
@@ -31,10 +41,8 @@ task :default => :dist
 
 desc 'Tags and releases the current version'
 task :release do
-  if %x(git ls-files -dm).split("\n").size.zero?
+  guard_clean do
     %x(git tag -am 'Version #{version}' v#{version})
     %x(git push --tags --quiet)
-  else
-    puts 'Commit your changes first...'
   end
 end

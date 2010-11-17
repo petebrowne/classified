@@ -1,4 +1,34 @@
 classify(String, function() {
+
+  def('endsWith', function(pattern) {
+    var d = this.length - pattern.length;
+    return d >= 0 && this.indexOf(pattern, d) === d;
+  });
+  
+  def('include', function(pattern) {
+    return this.indexOf(pattern) > -1;
+  });
+  
+  def('isBlank', function() {
+    return /^\s*$/.test(this);
+  });
+  
+  def('isEmpty', function() {
+    return this == '';
+  });
+  
+  def('startsWith', function(pattern) {
+    return this.lastIndexOf(pattern, 0) === 0;
+  });
+  
+  def('strip', function() {
+    return this.replace(/^\s+/, '').replace(/\s+$/, '');
+  });
+  
+  //----------------------------------
+  //  Inflector Methods
+  //----------------------------------
+  
   def('camelize', function() {
     return this.replace(/[-_]+(.)?/g, function(match, char) {
       return char ? char.toUpperCase() : '';

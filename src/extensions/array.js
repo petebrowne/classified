@@ -1,16 +1,11 @@
 classify(Array, function() {
   include(Enumerable);
   
-  if (typeof Array.prototype.forEach === 'undefined') {
-    def('__each__', function(iterator) {
-      for (var i = 0, n = this.length; i < n; i++) {
-        iterator.call(null, this[i]);
-      }
-    });
-  }
-  else {
-    alias('__each__', 'forEach');
-  }
+  def('__each__', function(iterator) {
+    for (var i = 0, n = this.length; i < n; i++) {
+      iterator.call(null, this[i]);
+    }
+  });
   
   if (typeof Array.prototype.indexOf === 'undefined') {
     def('indexOf', function(item) {

@@ -15,11 +15,13 @@ end
 files = %w(
   src/classified.js
   src/modules/enumerable.js
-  src/ext/array.js
-  src/ext/function.js
-  src/ext/number.js
-  src/ext/regExp.js
-  src/ext/string.js
+  src/extensions/array.js
+  src/extensions/function.js
+  src/extensions/number.js
+  src/extensions/object.js
+  src/extensions/regexp.js
+  src/extensions/string.js
+  src/classes/hash.js
 )
 
 desc 'Builds the distribution'

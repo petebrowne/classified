@@ -6,21 +6,28 @@
   <script type="text/javascript" src="../vendor/jasmine/jasmine.js"></script>
   <script type="text/javascript" src="../vendor/jasmine/jasmine-html.js"></script>
 
+  <!-- include support files here... -->
+  <script type="text/javascript" src="support/matchers.js"></script>
+
   <!-- include source files here... -->
   <script type="text/javascript" src="../vendor/classify/classify.js"></script>
   <script type="text/javascript" src="../src/modules/enumerable.js"></script>
-  <script type="text/javascript" src="../src/ext/array.js"></script>
-  <script type="text/javascript" src="../src/ext/function.js"></script>
-  <script type="text/javascript" src="../src/ext/number.js"></script>
-  <script type="text/javascript" src="../src/ext/regExp.js"></script>
-  <script type="text/javascript" src="../src/ext/string.js"></script>
+  <script type="text/javascript" src="../src/extensions/array.js"></script>
+  <script type="text/javascript" src="../src/extensions/function.js"></script>
+  <script type="text/javascript" src="../src/extensions/number.js"></script>
+  <script type="text/javascript" src="../src/extensions/object.js"></script>
+  <script type="text/javascript" src="../src/extensions/regexp.js"></script>
+  <script type="text/javascript" src="../src/extensions/string.js"></script>
+  <script type="text/javascript" src="../src/classes/hash.js"></script>
 
   <!-- include spec files here... -->
   <script type="text/javascript" src="classified/arraySpec.js"></script>
   <script type="text/javascript" src="classified/functionSpec.js"></script>
   <script type="text/javascript" src="classified/numberSpec.js"></script>
-  <script type="text/javascript" src="classified/regExpSpec.js"></script>
+  <script type="text/javascript" src="classified/objectSpec.js"></script>
+  <script type="text/javascript" src="classified/regexpSpec.js"></script>
   <script type="text/javascript" src="classified/stringSpec.js"></script>
+  <script type="text/javascript" src="classified/hashSpec.js"></script>
 </head>
 <body>
   <script type="text/javascript">

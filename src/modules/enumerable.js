@@ -78,6 +78,9 @@ module('Enumerable', function() {
 
     var found = false;
     this.each(function(value) {
+      if (typeof value.value !== 'undefined') {
+        value = value.value;
+      }
       if (value == item) {
         found = true;
         throw $break;

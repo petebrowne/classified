@@ -17,6 +17,7 @@ files = %w(
   src/modules/enumerable.js
   src/ext/array.js
   src/ext/function.js
+  src/ext/number.js
   src/ext/regExp.js
   src/ext/string.js
 )

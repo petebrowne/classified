@@ -1,6 +1,6 @@
 //--------------------------------------------------------------------------
 //
-//  Classified.js, version 0.2.1
+//  Classified.js, version 0.3.0
 //  Copyright (c) 2010, Peter Browne
 //
 //  Dependencies:
@@ -88,6 +88,9 @@ module('Enumerable', function() {
 
     var found = false;
     this.each(function(value) {
+      if (typeof value.value !== 'undefined') {
+        value = value.value;
+      }
       if (value == item) {
         found = true;
         throw $break;
@@ -129,16 +132,11 @@ module('Enumerable', function() {
 classify(Array, function() {
   include(Enumerable);
   
-  if (typeof Array.prototype.forEach === 'undefined') {
-    def('__each__', function(iterator) {
-      for (var i = 0, n = this.length; i < n; i++) {
-        iterator.call(null, this[i]);
-      }
-    });
-  }
-  else {
-    alias('__each__', 'forEach');
-  }
+  def('__each__', function(iterator) {
+    for (var i = 0, n = this.length; i < n; i++) {
+      iterator.call(null, this[i]);
+    }
+  });
   
   if (typeof Array.prototype.indexOf === 'undefined') {
     def('indexOf', function(item) {
@@ -204,6 +202,33 @@ classify(Function, function() {
   });
 });
 
+classify(Number, function() {
+  def('abs', function() {
+    return Math.abs(this);
+  });
+  
+  def('ceil', function() {
+    return Math.ceil(this);
+  });
+  
+  def('floor', function() {
+    return Math.floor(this);
+  });
+  
+  def('round', function() {
+    return Math.round(this);
+  });
+});
+
+extend(Object, function() {
+  def('extend', function(original, extension) {
+    for (var property in extension) {
+      original[property] = extension[property];
+    }
+    return original;
+  });
+});
+
 classify(RegExp, function() {
   def(this, 'escape', function(string) {
     return String(string).replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');
@@ -211,6 +236,36 @@ classify(RegExp, function() {
 });
 
 classify(String, function() {
+
+  def('endsWith', function(pattern) {
+    var d = this.length - pattern.length;
+    return d >= 0 && this.indexOf(pattern, d) === d;
+  });
+  
+  def('include', function(pattern) {
+    return this.indexOf(pattern) > -1;
+  });
+  
+  def('isBlank', function() {
+    return /^\s*$/.test(this);
+  });
+  
+  def('isEmpty', function() {
+    return this == '';
+  });
+  
+  def('startsWith', function(pattern) {
+    return this.lastIndexOf(pattern, 0) === 0;
+  });
+  
+  def('strip', function() {
+    return this.replace(/^\s+/, '').replace(/\s+$/, '');
+  });
+  
+  //----------------------------------
+  //  Inflector Methods
+  //----------------------------------
+  
   def('camelize', function() {
     return this.replace(/[-_]+(.)?/g, function(match, char) {
       return char ? char.toUpperCase() : '';
@@ -242,7 +297,81 @@ classify(String, function() {
   def('underscore', function() {
     return this.replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2')
                .replace(/([a-z\d])([A-Z])/g, '$1_$2')
-               .replace(/-/g, "_")
+               .replace(/-/g, '_')
                .toLowerCase();
   });
+});
+
+classify('Hash', function() {
+  include(Enumerable);
+
+  //----------------------------------
+  //  Constructor
+  //----------------------------------
+
+  def('initialize', function(object) {
+    this.update(object);
+  });
+  
+  //----------------------------------
+  //  Methods
+  //----------------------------------
+  
+  // Looping method required for Enumberable.
+  def('__each__', function(iterator) {
+    for (var key in this) {
+      if (this.hasOwnProperty(key)) {
+        var value  = this[key];
+        var pair   = [ key, value ];
+        pair.key   = key;
+        pair.value = value;
+        iterator.call(null, pair);
+      }
+    }
+  });
+  
+  // Returns an array of all the keys in the hash
+  def('keys', function() {
+    return this.collect(function(pair) {
+      return pair.key;
+    });
+  });
+  
+  // Returns a new hash instance with the key/value pairs merged in;
+  // this hash remains unchanged.
+  def('merge', function(object) {
+    return new Hash(this).update(object);
+  });
+  
+  // Returns a new hash instance where the current properties are merged
+  // into the given key/value pairs; this hash remains unchanged.
+  def('reverseMerge', function(object) {
+    return new Hash(object).update(this);
+  });
+  
+  // Updates a hash *in place* with the key/value pairs of `object`,
+  // returns the Hash.
+  def('update', function(object) {
+    if (object instanceof Hash) {
+      object.each(function(pair) {
+        this[pair.key] = pair.value;
+      }, this);
+    }
+    else {
+      Object.extend(this, object);
+    }
+    return this;
+  });
+  
+  // Returns an array of all the values in the hash
+  def('values', function() {
+    return this.collect(function(pair) {
+      return pair.value;
+    });
+  });
+});
+
+// Alias method for creating Hashes.
+def('$H', function(object) {
+  return new Hash(object);
 });

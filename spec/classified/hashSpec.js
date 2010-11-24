@@ -1,22 +1,69 @@
 describe('Hash', function() {
+  describe('#get', function() {
+    it('returns the value of the given key', function() {
+      var hash = new Hash({ 'a' : 1 });
+      
+      expect(hash.get('a')).toEqual(1);
+    });
+    
+    describe('without a set value', function() {
+      it('returns undefined', function() {
+        expect(new Hash().get('a')).toBeUndefined();
+      });
+    });
+    
+    describe('with an Object.prototype method as a key', function() {
+      it('returns undefined', function() {
+        expect($H().get('toString')).toBeUndefined();
+        expect($H().get('constructor')).toBeUndefined();
+        expect($H().get('hasOwnProperty')).toBeUndefined();
+        expect($H().get('propertyIsEnumerable')).toBeUndefined();
+      });
+    });
+  });
+  
+  describe('#set', function() {
+    it('sets the value of the given key', function() {
+      var hash = new Hash();
+      hash.set('a', 1);
+      
+      expect(hash.get('a')).toEqual(1);
+    });
+  });
+  
+  describe('#unset', function() {
+    it('deletes the value of the given key', function() {
+      var hash = new Hash({ 'a' : 1 });
+      hash.unset('a');
+      
+      expect(hash.get('a')).toBeUndefined();
+    });
+    
+    it('returns the current value of the given key', function() {
+      var hash = new Hash({ 'a' : 1 });
+      
+      expect(hash.unset('a')).toEqual(1);
+    });
+  });
+  
   describe('#initialize', function() {
     it('clones the given properties', function() {
       var object = { 'a' : 1 };
       var hash   = new Hash(object);
-      hash['b']  = 2;
+      hash.set('b', 2);
       
-      expect(hash['a']).toEqual(1);
-      expect(hash['b']).toEqual(2);
+      expect(hash.get('a')).toEqual(1);
+      expect(hash.get('b')).toEqual(2);
       expect(object['b']).toBeUndefined();
     });
     
     it('clones the given hash', function() {
       var hash1  = new Hash({ 'a' : 1 });
       var hash2  = new Hash(hash1);
-      hash2['b'] = 2;
+      hash2.set('b', 2);
       
-      expect(hash2['b']).toEqual(2);
-      expect(hash1['b']).toBeUndefined();
+      expect(hash2.get('b')).toEqual(2);
+      expect(hash1.get('b')).toBeUndefined();
     });
     
     it('can be called using $H alias', function() {
@@ -39,10 +86,10 @@ describe('Hash', function() {
       var hash1 = new Hash({ 'a' : 1 });
       var hash2 = hash1.merge({ 'a' : 0, 'b' : 1 });
       
-      expect(hash1['a']).toEqual(1);
-      expect(hash1['b']).toBeUndefined();
-      expect(hash2['a']).toEqual(0);
-      expect(hash2['b']).toEqual(1);
+      expect(hash1.get('a')).toEqual(1);
+      expect(hash1.get('b')).toBeUndefined();
+      expect(hash2.get('a')).toEqual(0);
+      expect(hash2.get('b')).toEqual(1);
       expect(hash1).not.toBe(hash2);
     });
   });
@@ -52,12 +99,19 @@ describe('Hash', function() {
       var hash1 = new Hash({ 'a' : 1 });
       var hash2 = hash1.reverseMerge({ 'a' : 0, 'b' : 1 });
       
-      expect(hash1['a']).toEqual(1);
-      expect(hash1['b']).toBeUndefined();
-      expect(hash2['a']).toEqual(1);
-      expect(hash2['b']).toEqual(1);
+      expect(hash1.get('a')).toEqual(1);
+      expect(hash1.get('b')).toBeUndefined();
+      expect(hash2.get('a')).toEqual(1);
+      expect(hash2.get('b')).toEqual(1);
       expect(hash1).not.toBe(hash2);
     });
+  });
+  
+  describe('#toObject', function() {
+    var object = { 'a' : 1, 'b' : 2 };
+    var hash   = new Hash(object);
+    
+    expect(hash.toObject()).toEqual(object);
   });
   
   describe('#update', function() {
@@ -65,16 +119,16 @@ describe('Hash', function() {
       var hash = new Hash({ 'a' : 1 });
       hash.update({ 'a' : 0, 'b' : 1 });
       
-      expect(hash['a']).toEqual(0);
-      expect(hash['b']).toEqual(1);
+      expect(hash.get('a')).toEqual(0);
+      expect(hash.get('b')).toEqual(1);
     });
     
     it('updates a hash with the given hash', function() {
       var hash = new Hash({ 'a' : 1 });
       hash.update($H({ 'a' : 0, 'b' : 1 }));
       
-      expect(hash['a']).toEqual(0);
-      expect(hash['b']).toEqual(1);
+      expect(hash.get('a')).toEqual(0);
+      expect(hash.get('b')).toEqual(1);
     });
   });
   

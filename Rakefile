@@ -3,6 +3,7 @@ require 'packr'
 FILES = %w(
   src/header.js
   src/modules/enumerable.js
+  src/modules/events.js
   src/extensions/array.js
   src/extensions/function.js
   src/extensions/number.js

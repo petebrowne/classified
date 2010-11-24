@@ -24,6 +24,7 @@ var UNDEFINED = 'undefined',
     include   = global.include,
     extend    = global.extend,
     alias     = global.alias,
+    slice     = Array.prototype.slice,
     
     // When using the Enumerable loops, throwing this object
     // will break out of the loop early;

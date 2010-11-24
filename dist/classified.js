@@ -24,6 +24,7 @@ var UNDEFINED = 'undefined',
     include   = global.include,
     extend    = global.extend,
     alias     = global.alias,
+    slice     = Array.prototype.slice,
     
     // When using the Enumerable loops, throwing this object
     // will break out of the loop early;
@@ -144,6 +145,68 @@ module('Enumerable', function() {
   });
   alias('findAll', 'select');
   alias('filter', 'select');
+});
+
+module('Events', function() {
+  // Bind an event, specified by a string name, `event`, to a `handler` function.
+  // Passing `"all"` will bind the handler to all events fired.
+  def('bind', function(type, handler) {
+    var events   = this.__events__ || (this.__events__ = {});
+    var handlers = events[type] || (events[type] = []);
+    handlers.push(handler);
+    return this;
+  });
+  
+  // Remove one or many events. If `handler` is null, removes all
+  // events for the event. If `event` is null, removes all bound events
+  // for all events.
+  def('unbind', function(type, handler) {
+    var events, handlers;
+    
+    if (!type) {
+      delete this.__events__;
+    }
+    else if (events = this.__events__) {
+      if (!handler) {
+        delete events[type];
+      }
+      else if (handlers = events[type]) {
+        for (var i = 0, l = handlers.length; i < l; i++) {
+          if (handlers[i] === handler) {
+            handlers.splice(i, 1);
+            break;
+          }
+        }
+      }
+    }
+    
+    return this;
+  });
+  
+  // Trigger an event, firing all bound events. Callbacks are passed the
+  // same arguments as `trigger` is, apart from the event name.
+  // Listening for `"all"` passes the true event name as the first argument.
+  def('trigger', function(type) {
+    var events;
+    
+    if (events = this.__events__) {
+      var args = arguments, handlers;
+      
+      if (handlers = events[type]) {
+        handlers.each(function(handler) {
+          handler.apply(this, slice.call(args, 1));
+        }, this);
+      }
+    
+      if (handlers = events['all']) {
+        handlers.each(function(handler) {
+          handler.apply(this, args);
+        }, this);
+      }
+    }
+    
+    return this;
+  });
 });
 
 classify(Array, function() {
@@ -331,24 +394,49 @@ classify('Hash', function() {
   //----------------------------------
 
   def('initialize', function(object) {
-    this.update(object);
+    this.__object__ = object instanceof Hash ? object.toObject() : Object.clone(object);
   });
   
   //----------------------------------
   //  Methods
   //----------------------------------
   
-  // Looping method required for Enumberable.
+  // Iterates over the name/value pairs in the hash.
   def('__each__', function(iterator) {
-    for (var key in this) {
-      if (this.hasOwnProperty(key)) {
-        var value  = this[key];
+    var object = this.__object__;
+    for (var key in object) {
+      if (object.hasOwnProperty(key)) {
+        var value  = object[key];
         var pair   = [ key, value ];
         pair.key   = key;
         pair.value = value;
         iterator.call(null, pair);
       }
     }
+  });
+  
+  // Returns the stored value for the given `key`.
+  def('get', function(key) {
+    var object = this.__object__;
+    
+    if (object[key] !== Object.prototype[key]) {
+      return object[key];
+    }
+  });
+  
+  // Stores `value` in the hash using the key `key` and returns `value`.
+  def('set', function(key, value) {
+    return this.__object__[key] = value;;
+  });
+  
+  // Deletes the stored pair for the given `key` from the hash
+  // and returns its value.
+  def('unset', function(key) {
+    var object = this.__object__,
+        value  = object[key];
+        
+    delete object[key];
+    return value;
   });
   
   // Returns an array of all the keys in the hash
@@ -370,16 +458,20 @@ classify('Hash', function() {
     return new Hash(object).update(this);
   });
   
+  // Returns a cloned, vanilla object whose properties (and property values)
+  // match the keys (and values) from the hash.
+  def('toObject', function() {
+    return Object.clone(this.__object__);
+  });
+  
   // Updates a hash *in place* with the key/value pairs of `object`,
   // returns the Hash.
   def('update', function(object) {
     if (object instanceof Hash) {
-      object.each(function(pair) {
-        this[pair.key] = pair.value;
-      }, this);
+      this.update(object.__object__);
     }
     else {
-      Object.extend(this, object);
+      Object.extend(this.__object__, object);
     }
     return this;
   });

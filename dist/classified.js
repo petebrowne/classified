@@ -244,6 +244,10 @@ extend(Object, function() {
     }
     return original;
   });
+  
+  def('clone', function(properties) {
+    return this.extend({}, properties);
+  });
 });
 
 classify(RegExp, function() {

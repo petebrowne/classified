@@ -1,6 +1,6 @@
 //--------------------------------------------------------------------------
 //
-//  Classified.js v0.3.1
+//  Classified.js v0.4
 //  http://github.com/petebrowne/classify
 //
 //  Copyright (c) 2010, Peter Browne

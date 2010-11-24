@@ -7,7 +7,7 @@ classify(Array, function() {
     }
   });
   
-  if (typeof Array.prototype.indexOf === 'undefined') {
+  if (typeof Array.prototype.indexOf === UNDEFINED) {
     def('indexOf', function(item) {
       for (var i = 0, n = this.length; i < n; i++) {
         if (this[i] === item) {
@@ -18,7 +18,7 @@ classify(Array, function() {
     });
   }
   
-  if (typeof Array.prototype.lastIndexOf === 'undefined') {
+  if (typeof Array.prototype.lastIndexOf === UNDEFINED) {
     def('lastIndexOf', function(item) {
       var i = this.length;
       while (i--) {

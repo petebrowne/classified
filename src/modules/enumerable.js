@@ -1,7 +1,3 @@
-// When using the Enumerable loops, throwing this object
-// will break out of the loop early;
-var $break = {};
-
 module('Enumerable', function() {
   
   // A function that just returns the first argument.
@@ -78,7 +74,7 @@ module('Enumerable', function() {
 
     var found = false;
     this.each(function(value) {
-      if (typeof value.value !== 'undefined') {
+      if (typeof value.value !== UNDEFINED) {
         value = value.value;
       }
       if (value == item) {

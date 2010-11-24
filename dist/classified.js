@@ -1,6 +1,8 @@
 //--------------------------------------------------------------------------
 //
-//  Classified.js, version 0.3.0
+//  Classified.js v0.3.0
+//  http://github.com/petebrowne/classify
+//
 //  Copyright (c) 2010, Peter Browne
 //
 //  Dependencies:
@@ -8,10 +10,25 @@
 //
 //--------------------------------------------------------------------------
 
-// When using the Enumerable loops, throwing this object
-// will break out of the loop early;
-var $break = {};
+(function () {
 
+//----------------------------------
+//  Constants
+//----------------------------------
+
+var UNDEFINED = 'undefined',
+    global    = this,
+    def       = global.def,
+    classify  = global.classify,
+    module    = global.module,
+    include   = global.include,
+    extend    = global.extend,
+    alias     = global.alias,
+    
+    // When using the Enumerable loops, throwing this object
+    // will break out of the loop early;
+    $break = global.$break = {};
+    
 module('Enumerable', function() {
   
   // A function that just returns the first argument.
@@ -88,7 +105,7 @@ module('Enumerable', function() {
 
     var found = false;
     this.each(function(value) {
-      if (typeof value.value !== 'undefined') {
+      if (typeof value.value !== UNDEFINED) {
         value = value.value;
       }
       if (value == item) {
@@ -138,7 +155,7 @@ classify(Array, function() {
     }
   });
   
-  if (typeof Array.prototype.indexOf === 'undefined') {
+  if (typeof Array.prototype.indexOf === UNDEFINED) {
     def('indexOf', function(item) {
       for (var i = 0, n = this.length; i < n; i++) {
         if (this[i] === item) {
@@ -149,7 +166,7 @@ classify(Array, function() {
     });
   }
   
-  if (typeof Array.prototype.lastIndexOf === 'undefined') {
+  if (typeof Array.prototype.lastIndexOf === UNDEFINED) {
     def('lastIndexOf', function(item) {
       var i = this.length;
       while (i--) {
@@ -375,3 +392,5 @@ classify('Hash', function() {
 def('$H', function(object) {
   return new Hash(object);
 });
+
+})();

@@ -14,6 +14,8 @@ FILES = %w(
   src/footer.js
 )
 
+task :default => :spec
+
 desc 'Builds the distribution'
 task :dist do
   source = cat(FILES).sub(/@VERSION/, version)
@@ -28,7 +30,6 @@ task :dist do
     file.write Packr.pack(source, :shrink_vars => true).strip
   end
 end
-task :default => :dist
 
 desc 'Tags and releases the current version'
 task :release do

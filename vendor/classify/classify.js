@@ -1,6 +1,6 @@
 //--------------------------------------------------------------------------
 //
-//  Classify.js v0.10.6
+//  Classify.js v0.10.7
 //  http://github.com/petebrowne/classify
 //
 //  Copyright (c) 2010, Peter Browne
@@ -16,7 +16,6 @@
   var UNDEFINED = 'undefined',
   FUNCTION      = 'function',
   STRING        = 'string',
-  TO_STRING     = 'toString',
   
   //----------------------------------
   //  Internal Properties
@@ -41,7 +40,7 @@
   // Builds a new Class, with optional inheritance.
   function buildClass(name, superclass) {
     function Class() {
-      if (!inheriting && typeof this.initialize !== UNDEFINED) {
+      if (!inheriting && typeof this.initialize === FUNCTION) {
         this.initialize.apply(this, arguments);
       }
     }
@@ -57,11 +56,12 @@
       inheriting = false;
     }
     
-    Class.superclass = superclass;
+    Class.superclass            = superclass;
     Class.prototype.constructor = Class;
-    namespace.def(Class.prototype, TO_STRING, function() {
+    Class.prototype.toString    = function() {
       return '[object ' + this.constructor.toString() + ']';
-    });
+    };
+    
     addName(currentObject, Class, name);
     
     return Class;
@@ -69,21 +69,20 @@
   
   // Builds a new module.
   function buildModule(name) {
-    var Module = {};
-    addName(currentObject, Module, name);
-    return Module;
+    return addName(currentObject, {}, name);
   }
   
   // Adds a toString method that returns the name of the object
   function addName(currentObject, object, name) {
-    namespace.def(object, TO_STRING, function(includeModules) {
+    object.toString = function(includeModules) {
       if (includeModules === false || currentObject == null || currentObject === namespace) {
         return name;
       }
       else {
-        return currentObject.toString() + '.' + name;
+        return currentObject + '.' + name;
       }
-    });
+    };
+    return object;
   }
   
   // Add the given methods to the object.
@@ -115,22 +114,20 @@
   
   // If necessary add a `callSuper` method to access the superclass's method.
   function addCallSuper(definition, superDefinition) {
-    if (typeof superDefinition === FUNCTION &&
-        typeof definition === FUNCTION &&
-        callsSuper(definition)) {
-          
+    if (typeof superDefinition === FUNCTION && callsSuper(definition)) {
       return function() {
-        var result,
-            definitionArgs = arguments,
-            currentSuper   = this.callSuper;
+        var defArgs  = arguments,
+            oldSuper = this.callSuper,
+            result;
         
         this.callSuper = function() {
-          var superArgs = (arguments.length > 0) ? arguments : definitionArgs;
-          return superDefinition.apply(this, superArgs);
+          return superDefinition.apply(this, arguments.length ? arguments : defArgs);
         };
         
-        result = definition.apply(this, definitionArgs);       
-        this.callSuper = currentSuper;
+        result = definition.apply(this, defArgs);
+        if (typeof oldSuper !== UNDEFINED) {
+          this.callSuper = oldSuper;
+        }
         
         return result;
       };
@@ -141,7 +138,7 @@
   
   // Test to see if a function contains a call to `callSuper`
   function callsSuper(method) {
-    return (/\bcallSuper\b/).test(method.toString());
+    return (/\bthis\.callSuper\b/).test(method.toString());
   }
     
   //----------------------------------

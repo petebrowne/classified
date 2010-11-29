@@ -10,7 +10,6 @@ FILES = %w(
   src/extensions/object.js
   src/extensions/regexp.js
   src/extensions/string.js
-  src/classes/hash.js
   src/footer.js
 )
 

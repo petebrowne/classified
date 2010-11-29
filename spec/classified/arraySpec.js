@@ -84,6 +84,69 @@ describe('Array', function() {
     });
   });
   
+  describe('#removeAt', function() {
+    it('removes the object at the given index from the array', function() {
+      var array = [ 1, 2, 3 ];
+      array.removeAt(1);
+      
+      expect(array).toEqual([ 1, 3 ]);
+    });
+    
+    it('returns the removed object if found', function() {
+      var array = [ 1, 2, 3 ];
+      
+      expect(array.removeAt(1)).toEqual(2);
+    });
+    
+    it('returns undefined if not found', function() {
+      var array = [ 1, 2, 3 ];
+      
+      expect(array.removeAt(50)).toBeUndefined();
+    });
+  });
+  
+  describe('#remove', function() {
+    it('removes the first instance of the given object from the array', function() {
+      var array = [ 1, 2, 2, 3 ];
+      array.remove(2);
+      
+      expect(array).toEqual([ 1, 2, 3 ]);
+    });
+    
+    it('returns the removed object if found', function() {
+      var array = [ 1, 2, 3 ];
+      
+      expect(array.remove(2)).toEqual(2);
+    });
+    
+    it('returns undefined if not found', function() {
+      var array = [ 1, 3 ];
+      
+      expect(array.remove(2)).toBeUndefined();
+    });
+  });
+  
+  describe('#removeAll', function() {
+    it('removes all instances of the given object from the array', function() {
+      var array = [ 1, 2, 2, 3 ];
+      array.removeAll(2);
+      
+      expect(array).toEqual([ 1, 3 ]);
+    });
+    
+    it('returns the removed object if found', function() {
+      var array = [ 1, 2, 2, 3 ];
+      
+      expect(array.removeAll(2)).toEqual(2);
+    });
+    
+    it('returns undefined if not found', function() {
+      var array = [ 1, 3 ];
+      
+      expect(array.removeAll(2)).toBeUndefined();
+    });
+  });
+  
   describe('#compact', function() {
     it('removes null values from the array', function() {
       var values = [ 1, 2, null, 3, null ];

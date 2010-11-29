@@ -62,6 +62,32 @@ classify(Array, function() {
     return this.compact().length == 0;
   });
   
+  // Removes the object at the specified index.
+  def('removeAt', function(index) {
+    if (index > 0 && index < this.length) {
+      return this.splice(index, 1)[0];
+    }
+  });
+
+  // Removes the first instance of the given object from the array.
+  def('remove', function(object) {
+    var indexOf = this.indexOf(object);
+    if (indexOf != -1) {
+      this.splice(indexOf, 1);
+      return object;
+    }
+  });
+  
+  // Removes all instances of the given object from the array.
+  def('removeAll', function(object) {
+    var removed = false;
+    while (typeof this.remove(object) !== UNDEFINED) {
+      removed = true;
+    }
+    
+    if (removed) return object;
+  });
+  
   // Returns a copy of the array without any null or undefined values.
   def('compact', function() {
     return this.reject(function(value) {

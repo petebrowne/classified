@@ -7,6 +7,20 @@ describe('Array', function() {
     });
   });
   
+  describe('#clone', function() {
+    it('returns a duplicate of the array', function() {
+      var array = [ 1, 2, 3 ];
+      
+      expect(array.clone()).toEqual(array);
+    });
+    
+    it('does not return the same array', function() {
+      var array = [ 1, 2, 3 ];
+      
+      expect(array.clone()).not.toBe(array);
+    });
+  });
+  
   describe('#compact', function() {
     it('removes null values from the array', function() {
       var values = [ 1, 2, null, 3, null ];

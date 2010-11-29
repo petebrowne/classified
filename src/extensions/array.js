@@ -14,6 +14,11 @@ classify(Array, function() {
     return this;
   });
   
+  // Returns a duplicate of the array, leaving the original array intact.
+  def('clone', function() {
+    return this.slice.call(this, 0);
+  });
+  
   // Returns a copy of the array without any null or undefined values.
   def('compact', function() {
     return this.reject(function(value) {

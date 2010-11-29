@@ -1,39 +1,4 @@
 describe('Array', function() {
-  it('uses $break to stop iterators', function() {
-    var result = 0;
-    ([ 1, 2, 3 ]).each(function(value) {
-      if ((result = value) == 2) {
-        throw $break;
-      }
-    });
-    
-    expect(result).toEqual(2);
-  });
-  
-  describe('#indexOf', function() {
-    it('returns the index of the found item', function() {
-      var values = [ 'a', 'b', 'c', 'b' ];
-      expect(values.indexOf('b')).toEqual(1);
-    });
-    
-    it("returns -1 if the item isn't found", function() {
-      var values = [ 'a', 'b', 'c' ];
-      expect(values.indexOf('d')).toEqual(-1);
-    });
-  });
-  
-  describe('#lastIndexOf', function() {
-    it('returns the last index of the found item', function() {
-      var values = [ 'a', 'b', 'c', 'b' ];
-      expect(values.lastIndexOf("b")).toEqual(3);
-    });
-    
-    it("returns -1 if the item isn't found", function() {
-      var values = [ 'a', 'b', 'c' ];
-      expect(values.lastIndexOf('d')).toEqual(-1);
-    });
-  });
-  
   describe('#clear', function() {
     it('empties the array', function() {
       var numbers = [ 1, 2, 3 ];
@@ -42,31 +7,17 @@ describe('Array', function() {
     });
   });
   
+  describe('#compact', function() {
+    it('removes null values from the array', function() {
+      var values = [ 1, 2, null, 3, null ];
+      expect(values.compact()).toEqual([ 1, 2, 3 ]);
+    });
+  });
+  
   describe('#first', function() {
     it('returns the first value from the array', function() {
       var numbers = [ 1, 2, 3 ];
       expect(numbers.first()).toEqual(1);
-    });
-  });
-  
-  describe('#last', function() {
-    it('returns the last value from the array', function() {
-      var numbers = [ 1, 2, 3 ];
-      expect(numbers.last()).toEqual(3);
-    });
-  });
-  
-  describe('#isEmpty', function() {
-    it('returns true if there are no elements in the array', function() {
-      expect(([]).isEmpty()).toBe(true);
-    });
-    
-    it('returns false if there are elements in the array', function() {
-      expect(([ 1, 2, 3 ]).isEmpty()).toBe(false);
-    });
-    
-    it('returns false if there are only nulls in the array', function() {
-      expect(([ null, null ]).isEmpty()).toBe(false);
     });
   });
   
@@ -84,24 +35,48 @@ describe('Array', function() {
     });
   });
   
-  describe('#removeAt', function() {
-    it('removes the object at the given index from the array', function() {
-      var array = [ 1, 2, 3 ];
-      array.removeAt(1);
-      
-      expect(array).toEqual([ 1, 3 ]);
+  describe('#isEmpty', function() {
+    it('returns true if there are no elements in the array', function() {
+      expect(([]).isEmpty()).toBe(true);
     });
     
-    it('returns the removed object if found', function() {
-      var array = [ 1, 2, 3 ];
-      
-      expect(array.removeAt(1)).toEqual(2);
+    it('returns false if there are elements in the array', function() {
+      expect(([ 1, 2, 3 ]).isEmpty()).toBe(false);
     });
     
-    it('returns undefined if not found', function() {
-      var array = [ 1, 2, 3 ];
-      
-      expect(array.removeAt(50)).toBeUndefined();
+    it('returns false if there are only nulls in the array', function() {
+      expect(([ null, null ]).isEmpty()).toBe(false);
+    });
+  });
+  
+  describe('#indexOf', function() {
+    it('returns the index of the found item', function() {
+      var values = [ 'a', 'b', 'c', 'b' ];
+      expect(values.indexOf('b')).toEqual(1);
+    });
+    
+    it("returns -1 if the item isn't found", function() {
+      var values = [ 'a', 'b', 'c' ];
+      expect(values.indexOf('d')).toEqual(-1);
+    });
+  });
+  
+  describe('#last', function() {
+    it('returns the last value from the array', function() {
+      var numbers = [ 1, 2, 3 ];
+      expect(numbers.last()).toEqual(3);
+    });
+  });
+  
+  describe('#lastIndexOf', function() {
+    it('returns the last index of the found item', function() {
+      var values = [ 'a', 'b', 'c', 'b' ];
+      expect(values.lastIndexOf("b")).toEqual(3);
+    });
+    
+    it("returns -1 if the item isn't found", function() {
+      var values = [ 'a', 'b', 'c' ];
+      expect(values.lastIndexOf('d')).toEqual(-1);
     });
   });
   
@@ -147,10 +122,24 @@ describe('Array', function() {
     });
   });
   
-  describe('#compact', function() {
-    it('removes null values from the array', function() {
-      var values = [ 1, 2, null, 3, null ];
-      expect(values.compact()).toEqual([ 1, 2, 3 ]);
+  describe('#removeAt', function() {
+    it('removes the object at the given index from the array', function() {
+      var array = [ 1, 2, 3 ];
+      array.removeAt(1);
+      
+      expect(array).toEqual([ 1, 3 ]);
+    });
+    
+    it('returns the removed object if found', function() {
+      var array = [ 1, 2, 3 ];
+      
+      expect(array.removeAt(1)).toEqual(2);
+    });
+    
+    it('returns undefined if not found', function() {
+      var array = [ 1, 2, 3 ];
+      
+      expect(array.removeAt(50)).toBeUndefined();
     });
   });
   
@@ -162,6 +151,17 @@ describe('Array', function() {
   });
   
   describe('with Enumberable methods', function() {
+    it('uses $break to stop iterators', function() {
+      var result = 0;
+      ([ 1, 2, 3 ]).each(function(value) {
+        if ((result = value) == 2) {
+          throw $break;
+        }
+      });
+      
+      expect(result).toEqual(2);
+    });
+    
     describe('#all, #every', function() {
       it('returns false if anything returns false', function() {
         var strings = [ 'a', 'b', 'c', '1', 'e' ];

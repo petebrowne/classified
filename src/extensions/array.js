@@ -8,6 +8,34 @@ classify(Array, function() {
     }
   });
   
+  // Clears the array (makes it empty) and returns the array reference.
+  def('clear', function() {
+    this.length = 0;
+    return this;
+  });
+  
+  // Returns a copy of the array without any null or undefined values.
+  def('compact', function() {
+    return this.reject(function(value) {
+      return value == null;
+    });
+  });
+  
+  // Returns the array's first item
+  def('first', function() {
+    return this[0];
+  });
+  
+  // Checks if the array is empty or only contains `null` objects.
+  def('isBlank', function() {
+    return this.compact().length == 0;
+  });
+  
+  // Checks if the array is empty.
+  def('isEmpty', function() {
+    return this.length == 0;
+  });
+  
   if (typeof Array.prototype.indexOf === UNDEFINED) {
     // Returns the index of the first occurrence of `item` within the array,
     // or `-1` if `item` doesn't exist in the array. It compares items
@@ -22,6 +50,11 @@ classify(Array, function() {
     });
   }
   
+  // Returns the array's last item
+  def('last', function() {
+    return this[this.length - 1];
+  });
+  
   if (typeof Array.prototype.lastIndexOf === UNDEFINED) {
     // Returns the position of the last occurrence of `item` within the array,
     // or `-1` if item doesn't exist in the array.
@@ -35,39 +68,6 @@ classify(Array, function() {
       return -1;
     });
   }
-  
-  // Clears the array (makes it empty) and returns the array reference.
-  def('clear', function() {
-    this.length = 0;
-    return this;
-  });
-  
-  // Returns the array's first item
-  def('first', function() {
-    return this[0];
-  });
-  
-  // Returns the array's last item
-  def('last', function() {
-    return this[this.length - 1];
-  });
-  
-  // Checks if the array is empty.
-  def('isEmpty', function() {
-    return this.length == 0;
-  });
-  
-  // Checks if the array is empty or only contains `null` objects.
-  def('isBlank', function() {
-    return this.compact().length == 0;
-  });
-  
-  // Removes the object at the specified index.
-  def('removeAt', function(index) {
-    if (index > 0 && index < this.length) {
-      return this.splice(index, 1)[0];
-    }
-  });
 
   // Removes the first instance of the given object from the array.
   def('remove', function(object) {
@@ -84,15 +84,14 @@ classify(Array, function() {
     while (typeof this.remove(object) !== UNDEFINED) {
       removed = true;
     }
-    
     if (removed) return object;
   });
   
-  // Returns a copy of the array without any null or undefined values.
-  def('compact', function() {
-    return this.reject(function(value) {
-      return value == null;
-    });
+  // Removes the object at the specified index.
+  def('removeAt', function(index) {
+    if (index > 0 && index < this.length) {
+      return this.splice(index, 1)[0];
+    }
   });
   
   // Produces a duplicate-free version of an array. If no duplicates are

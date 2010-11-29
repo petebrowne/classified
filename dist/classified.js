@@ -160,6 +160,24 @@ module('Enumerable', function() {
   });
   alias('reduce', 'inject');
   
+  // Invokes the same method, with the same arguments, for all items in a
+  // collection. Returns an array of the results of the method calls.
+  def('invoke', function(method) {
+    var args = slice.call(arguments, 1);
+    return this.map(function(value) {
+      return value[method].apply(value, args);
+    });
+  });
+  
+  // Pre-baked implementation for a common use-case of Enumerable#collect
+  // and Enumerable#each: fetching the same property for all of the
+  // elements. Returns an array of the property values.
+  def('pluck', function(property) {
+    return this.map(function(value) {
+      return value[property];
+    });
+  });
+  
   // Returns all the elements for which the iterator returns a falsy value.
   // For the opposite operation, see Enumerable#findAll.
   //
@@ -271,7 +289,7 @@ classify(Array, function() {
   
   // Returns a duplicate of the array, leaving the original array intact.
   def('clone', function() {
-    return this.slice.call(this, 0);
+    return slice.call(this, 0);
   });
   
   // Returns a copy of the array without any null or undefined values.

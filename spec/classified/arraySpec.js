@@ -284,6 +284,30 @@ describe('Array', function() {
         expect(sum).toEqual(15);
       });
     });
+    
+    describe('#invoke', function() {
+      it('calls the method with the given arguments on each item', function() {
+        var array = [ 'hello', 'world' ];
+        
+        expect(array.invoke('toUpperCase')).toEqual([ 'HELLO', 'WORLD' ]);
+      });
+      
+      describe('with arguments', function() {
+        it('calls the method with the given arguments on each item', function() {
+          var array = [ 'hello', 'world' ];
+          
+          expect(array.invoke('substring', 0, 3)).toEqual([ 'hel', 'wor' ]);
+        });
+      });
+    });
+    
+    describe('#pluck', function() {
+      it('returns the property from each item in the array', function() {
+        var array = [ 'hello', 'world', 'this', 'is', 'nice' ];
+        
+        expect(array.pluck('length')).toEqual([ 5, 5, 4, 2, 4 ]);
+      });
+    });
   
     describe('#reject', function() {
       it('returns a new array without the matched values', function() {

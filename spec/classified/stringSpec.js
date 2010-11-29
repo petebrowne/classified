@@ -97,13 +97,13 @@ describe('String', function() {
         expect('peter'.capitalize()).toEqual('Peter');
       });
       
-      it('lowercases all other letters', function() {
-        expect('PETER'.capitalize()).toEqual('Peter');
+      it('ignores the rest of the string', function() {
+        expect('PETER'.capitalize()).toEqual('PETER');
       });
     });
     
     describe('#dasherize', function() {
-      it("deosn't affect strings that aren't camelized", function() {
+      it("deos not affect strings that aren't camelized", function() {
         expect(''.dasherize()).toEqual('');
         expect('foo-bar'.dasherize()).toEqual('foo-bar');
       });

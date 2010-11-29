@@ -48,7 +48,7 @@ classify(String, function() {
   
   // Capitalizes the first letter of a string.
   def('capitalize', function() {
-    return this.charAt(0).toUpperCase() + this.substring(1).toLowerCase();
+    return this.charAt(0).toUpperCase() + this.substring(1);
   });
   
   // Converts a camelized string into a series of words separated by an

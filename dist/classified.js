@@ -1,6 +1,6 @@
 //--------------------------------------------------------------------------
 //
-//  Classified.js v0.5.0
+//  Classified.js v0.4.0
 //  http://github.com/petebrowne/classify
 //
 //  Copyright (c) 2010, Peter Browne
@@ -534,7 +534,7 @@ classify(String, function() {
   
   // Capitalizes the first letter of a string.
   def('capitalize', function() {
-    return this.charAt(0).toUpperCase() + this.substring(1).toLowerCase();
+    return this.charAt(0).toUpperCase() + this.substring(1);
   });
   
   // Converts a camelized string into a series of words separated by an

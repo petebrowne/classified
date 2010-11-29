@@ -56,6 +56,34 @@ describe('Array', function() {
     });
   });
   
+  describe('#isEmpty', function() {
+    it('returns true if there are no elements in the array', function() {
+      expect(([]).isEmpty()).toBe(true);
+    });
+    
+    it('returns false if there are elements in the array', function() {
+      expect(([ 1, 2, 3 ]).isEmpty()).toBe(false);
+    });
+    
+    it('returns false if there are only nulls in the array', function() {
+      expect(([ null, null ]).isEmpty()).toBe(false);
+    });
+  });
+  
+  describe('#isBlank', function() {
+    it('returns true if there are no elements in the array', function() {
+      expect(([]).isBlank()).toBe(true);
+    });
+    
+    it('returns false if there are elements in the array', function() {
+      expect(([ 1, 2, 3 ]).isBlank()).toBe(false);
+    });
+    
+    it('returns true if there are only nulls in the array', function() {
+      expect(([ null, null ]).isBlank()).toBe(true);
+    });
+  });
+  
   describe('#compact', function() {
     it('removes null values from the array', function() {
       var values = [ 1, 2, null, 3, null ];

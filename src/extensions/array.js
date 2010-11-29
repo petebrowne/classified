@@ -52,6 +52,16 @@ classify(Array, function() {
     return this[this.length - 1];
   });
   
+  // Checks if the array is empty.
+  def('isEmpty', function() {
+    return this.length == 0;
+  });
+  
+  // Checks if the array is empty or only contains `null` objects.
+  def('isBlank', function() {
+    return this.compact().length == 0;
+  });
+  
   // Returns a copy of the array without any null or undefined values.
   def('compact', function() {
     return this.reject(function(value) {

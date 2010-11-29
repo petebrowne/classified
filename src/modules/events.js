@@ -2,8 +2,9 @@ module('Events', function() {
   // Bind an event, specified by a string name, `event`, to a `handler` function.
   // Passing `"all"` will bind the handler to all events fired.
   def('bind', function(type, handler) {
-    var events   = this.__events__ || (this.__events__ = {});
-    var handlers = events[type] || (events[type] = []);
+    var events   = this.__events__ || (this.__events__ = {}),
+        handlers = events[type] || (events[type] = []);
+        
     handlers.push(handler);
     return this;
   });

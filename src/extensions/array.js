@@ -26,6 +26,20 @@ classify(Array, function() {
     return this[0];
   });
   
+  // Returns a flattened (one-dimensional) copy of the array, leaving
+  // the original array unchanged.
+  def('flatten', function() {
+    return this.inject([], function(array, value) {
+      if (value instanceof Array) {
+        array = array.concat(value.flatten());
+      }
+      else {
+        array.push(value);
+      }
+      return array;
+    });
+  });
+  
   // Checks if the array is empty or only contains `null` objects.
   def('isBlank', function() {
     return this.compact().length == 0;

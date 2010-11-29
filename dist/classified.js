@@ -281,6 +281,20 @@ classify(Array, function() {
     return this[0];
   });
   
+  // Returns a flattened (one-dimensional) copy of the array, leaving
+  // the original array unchanged.
+  def('flatten', function() {
+    return this.inject([], function(array, value) {
+      if (value instanceof Array) {
+        array = array.concat(value.flatten());
+      }
+      else {
+        array.push(value);
+      }
+      return array;
+    });
+  });
+  
   // Checks if the array is empty or only contains `null` objects.
   def('isBlank', function() {
     return this.compact().length == 0;
@@ -410,12 +424,15 @@ classify(Number, function() {
 
 extend(Object, function() {
   // Copies all properties from the `estension` to the `original` object.
+  //
+  // Aliased as `merge`.
   def('extend', function(original, extension) {
     for (var property in extension) {
       original[property] = extension[property];
     }
     return original;
   });
+  alias('merge', 'extend');
   
   // Creates and returns a shallow duplicate of the passed object by copying
   // all of the original's key/value pairs onto an empty object.

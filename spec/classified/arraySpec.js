@@ -21,6 +21,14 @@ describe('Array', function() {
     });
   });
   
+  describe('#flatten', function() {
+    it('flattens multidimensional array into a single array', function () {
+      var array = [ 1, [ 2, [ 3, 4 ], 5 ], 6, [ 7 ] ]
+      
+      expect(array.flatten()).toEqual([1, 2, 3, 4, 5, 6, 7 ]);
+    });
+  });
+  
   describe('#isBlank', function() {
     it('returns true if there are no elements in the array', function() {
       expect(([]).isBlank()).toBe(true);

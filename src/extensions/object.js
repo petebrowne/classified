@@ -1,11 +1,14 @@
 extend(Object, function() {
   // Copies all properties from the `estension` to the `original` object.
+  //
+  // Aliased as `merge`.
   def('extend', function(original, extension) {
     for (var property in extension) {
       original[property] = extension[property];
     }
     return original;
   });
+  alias('merge', 'extend');
   
   // Creates and returns a shallow duplicate of the passed object by copying
   // all of the original's key/value pairs onto an empty object.

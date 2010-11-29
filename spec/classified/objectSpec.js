@@ -33,4 +33,20 @@ describe('Object', function() {
       expect(Object.clone(properties)).not.toBe(properties);
     });
   });
+  
+  describe('.each', function() {
+    it('loops over each property of an object', function() {
+      var object = { 'a' : 1, 'b' : 2 };
+      var keys   = [];
+      var values = [];
+      
+      Object.each(object, function(key, value) {
+        keys.push(key);
+        values.push(value);
+      });
+      
+      expect(keys).toEqual([ 'a', 'b' ]);
+      expect(values).toEqual([ 1, 2 ]);
+    });
+  });
 });

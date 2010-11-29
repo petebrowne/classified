@@ -15,4 +15,13 @@ extend(Object, function() {
   def('clone', function(properties) {
     return this.extend({}, properties);
   });
+  
+  // Loops through all the properties of a given object.
+  def('each', function(object, iterator, context) {
+    for (var property in object) {
+      if (object.hasOwnProperty(property)) {
+        iterator.call(context, property, object[property]);
+      }
+    }
+  });
 });

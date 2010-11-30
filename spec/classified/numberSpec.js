@@ -1,96 +1,77 @@
 describe('Number', function() {
-  describe('#abs', function() {
-    it('returns the abs of a number', function() {
+  describe('#times', function() {
+    it('calls the iterator the given number of times', function() {
+      var count = 0;
+      (5).times(function() {
+        count++;
+      });
+    
+      expect(count).toEqual(5);
+    });
+  });
+  
+  describe('with Math functions', function() {
+    it('includes #abs', function() {
       expect((-1).abs()).toEqual(Math.abs(-1));
     });
-  });
   
-  describe('#acos', function() {
-    it('returns the acos of a number', function() {
+    it('includes #acos', function() {
       expect((-1).acos()).toEqual(Math.acos(-1));
     });
-  });
-  
-  describe('#asin', function() {
-    it('returns the asin of a number', function() {
+
+    it('includes #asin', function() {
       expect((-1).asin()).toEqual(Math.asin(-1));
     });
-  });
   
-  describe('#atan', function() {
-    it('returns the atan of a number', function() {
+    it('includes #atan', function() {
       expect((1).atan()).toEqual(Math.atan(1));
     });
-  });
   
-  describe('#atan2', function() {
-    it('returns the atan2 of a number', function() {
+    it('includes #atan2', function() {
       expect((4).atan2(8)).toEqual(Math.atan2(4, 8));
     });
-  });
   
-  describe('#ceil', function() {
-    it('returns the ceil of a number', function() {
+    it('includes #ceil', function() {
       expect((0.1).ceil()).toEqual(Math.ceil(0.1));
     });
-  });
   
-  describe('#exp', function() {
-    it('returns the exp of a number', function() {
+    it('includes #exp', function() {
       expect((5).exp()).toEqual(Math.exp(5));
     });
-  });
   
-  describe('#floor', function() {
-    it('returns the floor of a number', function() {
+    it('includes #floor', function() {
       expect((1.9).floor()).toEqual(Math.floor(1.9));
     });
-  });
-  
-  describe('#log', function() {
-    it('returns the log of a number', function() {
+    
+    it('includes #log', function() {
       expect((5).log()).toEqual(Math.log(5));
     });
-  });
-  
-  describe('#max', function() {
-    it('returns the max of a number', function() {
+    
+    it('includes #max', function() {
       expect((25).max(10, 15, 0)).toEqual(Math.max(25, 10, 15, 0));
     });
-  });
-  
-  describe('#min', function() {
-    it('returns the min of a number', function() {
+    
+    it('includes #min', function() {
       expect((5).min(10, 15)).toEqual(Math.min(5, 10, 15));
     });
-  });
-  
-  describe('#pow', function() {
-    it('returns the pow of a number', function() {
+    
+    it('includes #pow', function() {
       expect((5).pow(2)).toEqual(Math.pow(5, 2));
     });
-  });
-  
-  describe('#round', function() {
-    it('rounds the number to the nearest integer', function() {
+    
+    it('includes #round', function() {
       expect((0.8).round()).toEqual(Math.round(0.8));
     });
-  });
   
-  describe('#sin', function() {
-    it('returns the sin of a number', function() {
+    it('includes #sin', function() {
       expect((1).sin()).toEqual(Math.sin(1));
     });
-  });
-  
-  describe('#sqrt', function() {
-    it('returns the sqrt of a number', function() {
+    
+    it('includes #sqrt', function() {
       expect((9).sqrt()).toEqual(Math.sqrt(9));
     });
-  });
-  
-  describe('#tan', function() {
-    it('returns the tan of a number', function() {
+    
+    it('includes #tan', function() {
       expect((1).tan()).toEqual(Math.tan(1));
     });
   });

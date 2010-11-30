@@ -106,7 +106,7 @@ describe('Function', function() {
       var id = method.periodical(0.05);
       expect(count).toBe(0);
       
-      waits(150);
+      waits(125);
       runs(function() {
         clearInterval(id);
         expect(count).toBe(2);
@@ -122,7 +122,7 @@ describe('Function', function() {
       var id = method.periodical(0.05, 1, 2, 3);
       expect(args).toBeUndefined();
       
-      waits(100);
+      waits(75);
       runs(function() {
         clearInterval(id);
         expect(args).toEqual([ 1, 2, 3 ]);

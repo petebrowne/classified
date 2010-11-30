@@ -96,6 +96,40 @@ describe('Function', function() {
     });
   });
   
+  describe('#periodical', function() {
+    it('runs a function periodically', function() {
+      var count = 0;
+      var method = function() {
+        count++;
+      };
+      
+      var id = method.periodical(0.05);
+      expect(count).toBe(0);
+      
+      waits(150);
+      runs(function() {
+        clearInterval(id);
+        expect(count).toBe(2);
+      });
+    });
+    
+    it('passes arguments to the deferred function', function() {
+      var args;
+      var method = function() {
+        args = Array.prototype.slice.call(arguments);
+      };
+      
+      var id = method.periodical(0.05, 1, 2, 3);
+      expect(args).toBeUndefined();
+      
+      waits(100);
+      runs(function() {
+        clearInterval(id);
+        expect(args).toEqual([ 1, 2, 3 ]);
+      });
+    });
+  });
+  
   describe('#stop', function() {
     it('stops delayed calls', function() {
       var delayed = false;
@@ -124,6 +158,23 @@ describe('Function', function() {
       waits(50);
       runs(function() {
         expect(defered).toBe(false);
+      });
+    });
+    
+    it('stops periodical calls', function() {
+      var count = 0;
+      var method = function() {
+        count++;
+      };
+      
+      method.periodical(0.05);
+      waits(125);
+      runs(function() {
+        method.stop();
+      })
+      waits(50);
+      runs(function() {
+        expect(count).toBe(2);
       });
     });
   });

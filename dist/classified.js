@@ -458,11 +458,26 @@ classify(Function, function() {
     return this.delay.apply(this, [ 0.01 ].concat(slice.call(arguments)));
   });
   
+  // Schedules the function to run in the specified intervals of time, passing
+  // any arguments given.
+  // 
+  // Behaves much like `window.setInterval`, but the interval is in seconds
+  // rather than milliseconds. Returns an integer ID that can be used to
+  // clear the interval with `window.clearInterval` before it runs.
+  def('periodical', function(interval) {
+    var method = this,
+        args   = slice.call(arguments, 1);
+        
+    return this.__intervalID__ = setInterval(function() {
+      return method.apply(null, args);
+    }, interval * 1000);
+  });
+  
   // If a #delay, #defer, or #periodical call has been made, calling #stop
   // will stop the function call from being made.
   def('stop', function() {
     clearTimeout(this.__timeoutID__);
-    // clearInterval(this.__intervalID__);
+    clearInterval(this.__intervalID__);
   });
 });
 

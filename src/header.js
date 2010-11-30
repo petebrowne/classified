@@ -6,7 +6,7 @@
 //  Copyright (c) 2010, Peter Browne
 //
 //  Dependencies:
-//  - classify  0.10.4  http://github.com/petebrowne/classify
+//  - classify  0.10.7  http://github.com/petebrowne/classify
 //
 //--------------------------------------------------------------------------
 

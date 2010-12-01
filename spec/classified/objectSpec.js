@@ -77,4 +77,40 @@ describe('Object', function() {
       });
     });
   });
+  
+  describe('type checking', function() {
+    describe('#isUndefined', function() {
+      it('returns true when the value is undefined', function() {
+        var value;
+        expect(Object.isUndefined(value)).toBe(true);
+      });
+      
+      it('returns false when the value is defined', function() {
+        expect(Object.isUndefined(null)).toBe(false);
+        expect(Object.isUndefined(false)).toBe(false);
+        expect(Object.isUndefined(0)).toBe(false);
+        expect(Object.isUndefined('')).toBe(false);
+        expect(Object.isUndefined(function() {})).toBe(false);
+        expect(Object.isUndefined({})).toBe(false);
+        expect(Object.isUndefined([])).toBe(false);
+      });
+    });
+    
+    describe('#isDefined', function() {
+      it('returns false when the value is undefined', function() {
+        var value;
+        expect(Object.isDefined(value)).toBe(false);
+      });
+      
+      it('returns true when the value is defined', function() {
+        expect(Object.isDefined(null)).toBe(true);
+        expect(Object.isDefined(false)).toBe(true);
+        expect(Object.isDefined(0)).toBe(true);
+        expect(Object.isDefined('')).toBe(true);
+        expect(Object.isDefined(function() {})).toBe(true);
+        expect(Object.isDefined({})).toBe(true);
+        expect(Object.isDefined([])).toBe(true);
+      });
+    });
+  });
 });

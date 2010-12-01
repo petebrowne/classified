@@ -552,6 +552,16 @@ extend(Object, function() {
     });
     return results;
   });
+  
+  // Returns `true` if `object` is of type `undefined`; `false` otherwise.
+  def('isUndefined', function(value) {
+    return typeof value === 'undefined';
+  });
+  
+  // Returns `false` if `object` is of type `undefined`; `true` otherwise.
+  def('isDefined', function(value) {
+    return !Object.isUndefined(value);
+  });
 });
 
 classify(RegExp, function() {

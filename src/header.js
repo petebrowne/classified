@@ -13,11 +13,10 @@
 (function () {
 
 //----------------------------------
-//  Constants
+//  Shortcuts
 //----------------------------------
 
-var UNDEFINED = 'undefined',
-    global    = this,
+var global    = this,
     def       = global.def,
     classify  = global.classify,
     module    = global.module,

@@ -16,5 +16,5 @@ classify(Number, function() {
         return Math[name].apply(null, [ this ].concat(slice.call(arguments)));
       });
     });
-  })([ 'abs', 'acos', 'asin', 'atan', 'atan2', 'ceil', 'cos', 'exp', 'floor', 'log', 'max', 'min', 'pow', 'round', 'sin', 'sqrt', 'tan' ]);
+  })('abs acos asin atan atan2 ceil cos exp floor log max min pow round sin sqrt tan'.split(' '));
 });

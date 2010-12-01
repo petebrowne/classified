@@ -79,10 +79,13 @@ describe('Object', function() {
   });
   
   describe('type checking', function() {
+    var noop  = function() {};
+    var undef = noop();
+    var date  = new Date();
+    
     describe('#isUndefined', function() {
       it('returns true when the value is undefined', function() {
-        var value;
-        expect(Object.isUndefined(value)).toBe(true);
+        expect(Object.isUndefined(undef)).toBe(true);
       });
       
       it('returns false when the value is defined', function() {
@@ -90,16 +93,16 @@ describe('Object', function() {
         expect(Object.isUndefined(false)).toBe(false);
         expect(Object.isUndefined(0)).toBe(false);
         expect(Object.isUndefined('')).toBe(false);
-        expect(Object.isUndefined(function() {})).toBe(false);
+        expect(Object.isUndefined(noop)).toBe(false);
         expect(Object.isUndefined({})).toBe(false);
         expect(Object.isUndefined([])).toBe(false);
+        expect(Object.isUndefined(date)).toBe(false);
       });
     });
     
     describe('#isDefined', function() {
       it('returns false when the value is undefined', function() {
-        var value;
-        expect(Object.isDefined(value)).toBe(false);
+        expect(Object.isDefined(undef)).toBe(false);
       });
       
       it('returns true when the value is defined', function() {
@@ -107,9 +110,117 @@ describe('Object', function() {
         expect(Object.isDefined(false)).toBe(true);
         expect(Object.isDefined(0)).toBe(true);
         expect(Object.isDefined('')).toBe(true);
-        expect(Object.isDefined(function() {})).toBe(true);
+        expect(Object.isDefined(noop)).toBe(true);
         expect(Object.isDefined({})).toBe(true);
         expect(Object.isDefined([])).toBe(true);
+        expect(Object.isDefined(date)).toBe(true);
+      });
+    });
+    
+    describe('#isString', function() {
+      it('returns true when the value is a string', function() {
+        expect(Object.isString('')).toBe(true);
+      });
+      
+      it('returns false when the value is not a string', function() {
+        expect(Object.isString(undef)).toBe(false);
+        expect(Object.isString(null)).toBe(false);
+        expect(Object.isString(false)).toBe(false);
+        expect(Object.isString(0)).toBe(false);
+        expect(Object.isString(noop)).toBe(false);
+        expect(Object.isString({})).toBe(false);
+        expect(Object.isString([])).toBe(false);
+        expect(Object.isString(date)).toBe(false);
+        expect(Object.isString(document)).toBe(false);
+      });
+    });
+    
+    describe('#isNumber', function() {
+      it('returns true when the value is a number', function() {
+        expect(Object.isNumber(0)).toBe(true);
+      });
+      
+      it('returns false when the value is not a number', function() {
+        expect(Object.isNumber(undef)).toBe(false);
+        expect(Object.isNumber(null)).toBe(false);
+        expect(Object.isNumber(false)).toBe(false);
+        expect(Object.isNumber('')).toBe(false);
+        expect(Object.isNumber(noop)).toBe(false);
+        expect(Object.isNumber({})).toBe(false);
+        expect(Object.isNumber([])).toBe(false);
+        expect(Object.isNumber(date)).toBe(false);
+        expect(Object.isNumber(document)).toBe(false);
+      });
+    });
+    
+    describe('#isArray', function() {
+      it('returns true when the value is an array', function() {
+        expect(Object.isArray([])).toBe(true);
+      });
+      
+      it('returns false when the value is not an array', function() {
+        expect(Object.isArray(undef)).toBe(false);
+        expect(Object.isArray(null)).toBe(false);
+        expect(Object.isArray(false)).toBe(false);
+        expect(Object.isArray('')).toBe(false);
+        expect(Object.isArray(0)).toBe(false);
+        expect(Object.isArray(noop)).toBe(false);
+        expect(Object.isArray({})).toBe(false);
+        expect(Object.isArray(date)).toBe(false);
+        expect(Object.isArray(document)).toBe(false);
+      });
+    });
+    
+    describe('#isFunction', function() {
+      it('returns true when the value is a function', function() {
+        expect(Object.isFunction(noop)).toBe(true);
+      });
+      
+      it('returns false when the value is not a function', function() {
+        expect(Object.isFunction(undef)).toBe(false);
+        expect(Object.isFunction(null)).toBe(false);
+        expect(Object.isFunction(false)).toBe(false);
+        expect(Object.isFunction('')).toBe(false);
+        expect(Object.isFunction(0)).toBe(false);
+        expect(Object.isFunction({})).toBe(false);
+        expect(Object.isFunction([])).toBe(false);
+        expect(Object.isFunction(date)).toBe(false);
+        expect(Object.isFunction(document)).toBe(false);
+      });
+    });
+    
+    describe('#isDate', function() {
+      it('returns true when the value is a date', function() {
+        expect(Object.isDate(date)).toBe(true);
+      });
+      
+      it('returns false when the value is not a date', function() {
+        expect(Object.isDate(undef)).toBe(false);
+        expect(Object.isDate(null)).toBe(false);
+        expect(Object.isDate(false)).toBe(false);
+        expect(Object.isDate('')).toBe(false);
+        expect(Object.isDate(0)).toBe(false);
+        expect(Object.isDate(noop)).toBe(false);
+        expect(Object.isDate({})).toBe(false);
+        expect(Object.isDate([])).toBe(false);
+        expect(Object.isDate(document)).toBe(false);
+      });
+    });
+    
+    describe('#isObject', function() {
+      it('returns true when the value is an object', function() {
+        expect(Object.isObject({})).toBe(true);
+      });
+      
+      it('returns false when the value is not an object', function() {
+        expect(Object.isObject(undef)).toBe(false);
+        expect(Object.isObject(null)).toBe(false);
+        expect(Object.isObject(false)).toBe(false);
+        expect(Object.isObject('')).toBe(false);
+        expect(Object.isObject(0)).toBe(false);
+        expect(Object.isObject(noop)).toBe(false);
+        expect(Object.isObject([])).toBe(false);
+        expect(Object.isObject(date)).toBe(false);
       });
     });
   });

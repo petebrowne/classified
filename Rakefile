@@ -2,12 +2,12 @@ require 'packr'
 
 FILES = %w(
   src/header.js
+  src/extensions/object.js
   src/modules/enumerable.js
   src/modules/events.js
   src/extensions/array.js
   src/extensions/function.js
   src/extensions/number.js
-  src/extensions/object.js
   src/extensions/regexp.js
   src/extensions/string.js
   src/footer.js

@@ -1,4 +1,62 @@
 extend(Object, function() {
+  
+  //----------------------------------
+  //  Typecasting Methods
+  //----------------------------------
+  
+  // Shortcut to the toString method used for type checking.
+  var toString = Object.prototype.toString;
+  
+  // Returns `true` if `object` is of type `undefined`.
+  def('isUndefined', function(object) {
+    return typeof object === 'undefined';
+  });
+  
+  // Returns `true` if `object` is not undefined.
+  def('isDefined', function(object) {
+    return !Object.isUndefined(object);
+  });
+  
+  // Returns `true` if `object` is an object.
+  def('isObject', function(object) {
+    if (object == null) return false;
+    return toString.call(object) === '[object Object]';
+  });
+  
+  // Returns `true` if `object` is a function.
+  def('isFunction', function(object) {
+    return toString.call(object) === '[object Function]';
+  });
+  
+  // Returns `true` if `object` is a string.
+  def('isString', function(object) {
+    return toString.call(object) === '[object String]';
+  });
+  
+  // Returns `true` if `object` is a number.
+  def('isNumber', function(object) {
+    return toString.call(object) === '[object Number]';
+  });
+  
+  // Returns `true` if `object` is a date.
+  def('isDate', function(object) {
+    return toString.call(object) === '[object Date]';
+  });
+  
+  // Returns `true` if `object` is an array.
+  if (Object.isFunction(Array.isArray)) {
+    def('isArray', Array.isArray);
+  }
+  else {
+    def('isArray', function(object) {
+      return toString.call(object) === '[object Array]';
+    });
+  }
+  
+  //----------------------------------
+  //  Class Methods
+  //----------------------------------
+  
   // Copies all properties from the `estension` to the `original` object.
   //
   // Aliased as `merge`.
@@ -29,11 +87,11 @@ extend(Object, function() {
   });
   
   // Returns an array of the object's property names.
-  if (typeof Object.keys === UNDEFINED) {
+  if (!Object.isFunction(Object.keys)) {
     def('keys', function(object) {
-      if (typeof object !== 'object') throw new TypeError();
+      if (!Object.isObject(object)) throw new TypeError();
       var results = [];
-      this.each(object, function(key, value) {
+      Object.each(object, function(key, value) {
         results.push(key);
       });
       return results;
@@ -43,19 +101,9 @@ extend(Object, function() {
   // Returns an array of the object's property values.
   def('values', function(object) {
     var results = [];
-    this.each(object, function(key, value) {
+    Object.each(object, function(key, value) {
       results.push(value);
     });
     return results;
-  });
-  
-  // Returns `true` if `object` is of type `undefined`; `false` otherwise.
-  def('isUndefined', function(value) {
-    return typeof value === 'undefined';
-  });
-  
-  // Returns `false` if `object` is of type `undefined`; `true` otherwise.
-  def('isDefined', function(value) {
-    return !Object.isUndefined(value);
   });
 });

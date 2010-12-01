@@ -35,7 +35,7 @@ classify(Array, function() {
   // the original array unchanged.
   def('flatten', function() {
     return this.inject([], function(array, value) {
-      if (value instanceof Array) {
+      if (Object.isArray(value)) {
         array = array.concat(value.flatten());
       }
       else {
@@ -55,7 +55,7 @@ classify(Array, function() {
     return this.length == 0;
   });
   
-  if (typeof Array.prototype.indexOf === UNDEFINED) {
+  if (!Object.isFunction(Array.prototype.indexOf)) {
     // Returns the index of the first occurrence of `item` within the array,
     // or `-1` if `item` doesn't exist in the array. It compares items
     // using strict equality (`===`).
@@ -74,7 +74,7 @@ classify(Array, function() {
     return this[this.length - 1];
   });
   
-  if (typeof Array.prototype.lastIndexOf === UNDEFINED) {
+  if (!Object.isFunction(Array.prototype.lastIndexOf)) {
     // Returns the position of the last occurrence of `item` within the array,
     // or `-1` if item doesn't exist in the array.
     def('lastIndexOf', function(item) {
@@ -100,7 +100,7 @@ classify(Array, function() {
   // Removes all instances of the given object from the array.
   def('removeAll', function(object) {
     var removed = false;
-    while (typeof this.remove(object) !== UNDEFINED) {
+    while (Object.isDefined(this.remove(object))) {
       removed = true;
     }
     if (removed) return object;

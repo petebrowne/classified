@@ -92,13 +92,13 @@ module('Enumerable', function() {
   //
   // Aliased as `contains`.
   def('include', function(item) {
-    if (typeof this.indexOf === 'function') {
+    if (Object.isFunction(this.indexOf)) {
       return this.indexOf(item) != -1;
     }
 
     var found = false;
     this.each(function(value) {
-      if (typeof value.value !== UNDEFINED) {
+      if (Object.isDefined(value.value)) {
         value = value.value;
       }
       if (value == item) {

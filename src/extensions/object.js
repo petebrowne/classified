@@ -27,4 +27,25 @@ extend(Object, function() {
       }
     }
   });
+  
+  // Returns an array of the object's property names.
+  if (typeof Object.keys === UNDEFINED) {
+    def('keys', function(object) {
+      if (typeof object !== 'object') throw new TypeError();
+      var results = [];
+      this.each(object, function(key, value) {
+        results.push(key);
+      });
+      return results;
+    });
+  }
+  
+  // Returns an array of the object's property values.
+  def('values', function(object) {
+    var results = [];
+    this.each(object, function(key, value) {
+      results.push(value);
+    });
+    return results;
+  });
 });

@@ -49,4 +49,32 @@ describe('Object', function() {
       expect(values).toEqual([ 1, 2 ]);
     });
   });
+  
+  describe('.keys', function() {
+    describe('when given an empty object', function() {
+      it('returns an empty array', function() {
+        expect(Object.keys({})).toEqual([]);
+      });
+    });
+    
+    describe('when given an object with properties', function() {
+      it('returns an array of those properties', function() {
+        expect(Object.keys({ 'a' : 1, 'b' : 2, 'c' : 3 }).sort()).toEqual([ 'a', 'b', 'c' ]);
+      });
+    });
+  });
+  
+  describe('.values', function() {
+    describe('when given an empty object', function() {
+      it('returns an empty array', function() {
+        expect(Object.values({})).toEqual([]);
+      });
+    });
+    
+    describe('when given an object with properties', function() {
+      it('returns an array of the values', function() {
+        expect(Object.values({ 'a' : 1, 'b' : 2, 'c' : 3 }).sort()).toEqual([ 1, 2, 3 ]);
+      });
+    });
+  });
 });

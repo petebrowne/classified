@@ -1,4 +1,15 @@
 describe('Array', function() {
+  describe('.slice', function() {
+    it('turns arguments into an array', function() {
+      var args;
+      (function() {
+        args = Array.slice(arguments);
+      })(1, 2, 3);
+      
+      expect(args).toEqual([ 1, 2, 3 ]);
+    });
+  });
+  
   describe('#clear', function() {
     it('empties the array', function() {
       var numbers = [ 1, 2, 3 ];

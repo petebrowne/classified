@@ -1,6 +1,12 @@
 classify(Array, function() {
   include(Enumerable);
   
+  // Convenience method for slicing/cloning arrays. Useful
+  // for turning arguments into an array.
+  def(this, 'slice', function(array, start, end) {
+    return Array.prototype.slice.call(array, start, end);
+  });
+  
   // Looping method used by Enumerable.
   def('__each__', function(iterator) {
     for (var i = 0, n = this.length; i < n; i++) {
@@ -16,7 +22,7 @@ classify(Array, function() {
   
   // Returns a duplicate of the array, leaving the original array intact.
   def('clone', function() {
-    return slice.call(this, 0);
+    return Array.slice(this, 0);
   });
   
   // Returns a copy of the array without any null or undefined values.

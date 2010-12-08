@@ -131,7 +131,7 @@ module('Enumerable', function() {
   // Invokes the same method, with the same arguments, for all items in a
   // collection. Returns an array of the results of the method calls.
   def('invoke', function(method) {
-    var args = slice.call(arguments, 1);
+    var args = Array.slice(arguments, 1);
     return this.map(function(value) {
       return value[method].apply(value, args);
     });

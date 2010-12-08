@@ -23,7 +23,6 @@ var global    = this,
     include   = global.include,
     extend    = global.extend,
     alias     = global.alias,
-    slice     = Array.prototype.slice,
     
     // When using the Enumerable loops, throwing this object
     // will break out of the loop early;
@@ -272,7 +271,7 @@ module('Enumerable', function() {
   // Invokes the same method, with the same arguments, for all items in a
   // collection. Returns an array of the results of the method calls.
   def('invoke', function(method) {
-    var args = slice.call(arguments, 1);
+    var args = Array.slice(arguments, 1);
     return this.map(function(value) {
       return value[method].apply(value, args);
     });
@@ -365,7 +364,7 @@ module('Events', function() {
       
       if (handlers = events[type]) {
         handlers.each(function(handler) {
-          handler.apply(this, slice.call(args, 1));
+          handler.apply(this, Array.slice(args, 1));
         }, this);
       }
     
@@ -383,6 +382,12 @@ module('Events', function() {
 classify(Array, function() {
   include(Enumerable);
   
+  // Convenience method for slicing/cloning arrays. Useful
+  // for turning arguments into an array.
+  def(this, 'slice', function(array, start, end) {
+    return Array.prototype.slice.call(array, start, end);
+  });
+  
   // Looping method used by Enumerable.
   def('__each__', function(iterator) {
     for (var i = 0, n = this.length; i < n; i++) {
@@ -398,7 +403,7 @@ classify(Array, function() {
   
   // Returns a duplicate of the array, leaving the original array intact.
   def('clone', function() {
-    return slice.call(this, 0);
+    return Array.slice(this, 0);
   });
   
   // Returns a copy of the array without any null or undefined values.
@@ -521,10 +526,10 @@ classify(Function, function() {
     }
     
     var method = this,
-        args   = slice.call(arguments, 1);
+        args   = Array.slice(arguments, 1);
         
     return function() {
-      return method.apply(context, args.concat(slice.call(arguments)));
+      return method.apply(context, args.concat(Array.slice(arguments)));
     }
   });
   
@@ -535,10 +540,10 @@ classify(Function, function() {
     if (!arguments.length) return this;
     
     var method = this,
-        args   = slice.call(arguments);
+        args   = Array.slice(arguments);
         
     return function() {
-      return method.apply(null, args.concat(slice.call(arguments)));
+      return method.apply(null, args.concat(Array.slice(arguments)));
     }
   });
   
@@ -550,7 +555,7 @@ classify(Function, function() {
   // clear the timeout with `window.clearTimeout` before it runs.
   def('delay', function(timeout) {
     var method = this,
-        args   = slice.call(arguments, 1);
+        args   = Array.slice(arguments, 1);
         
     if (timeout <= 0) {
       return method.apply(null, args);
@@ -564,7 +569,7 @@ classify(Function, function() {
   
   // Schedules the function to run as soon as the interpreter is idle.
   def('defer', function() {
-    return this.delay.apply(this, [ 0.01 ].concat(slice.call(arguments)));
+    return this.delay.apply(this, [ 0.01 ].concat(Array.slice(arguments)));
   });
   
   // Schedules the function to run in the specified intervals of time, passing
@@ -575,7 +580,7 @@ classify(Function, function() {
   // clear the interval with `window.clearInterval` before it runs.
   def('periodical', function(interval) {
     var method = this,
-        args   = slice.call(arguments, 1);
+        args   = Array.slice(arguments, 1);
         
     return this.__intervalID__ = setInterval(function() {
       return method.apply(null, args);
@@ -605,7 +610,7 @@ classify(Number, function() {
   (function(math) {
     math.each(function(name) {
       def(name, function() {
-        return Math[name].apply(null, [ this ].concat(slice.call(arguments)));
+        return Math[name].apply(null, [ this ].concat(Array.slice(arguments)));
       });
     });
   })('abs acos asin atan atan2 ceil cos exp floor log max min pow round sin sqrt tan'.split(' '));

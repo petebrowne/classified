@@ -13,7 +13,7 @@ classify(Number, function() {
   (function(math) {
     math.each(function(name) {
       def(name, function() {
-        return Math[name].apply(null, [ this ].concat(slice.call(arguments)));
+        return Math[name].apply(null, [ this ].concat(Array.slice(arguments)));
       });
     });
   })('abs acos asin atan atan2 ceil cos exp floor log max min pow round sin sqrt tan'.split(' '));

@@ -46,7 +46,7 @@ module('Events', function() {
       
       if (handlers = events[type]) {
         handlers.each(function(handler) {
-          handler.apply(this, slice.call(args, 1));
+          handler.apply(this, Array.slice(args, 1));
         }, this);
       }
     

@@ -9,10 +9,10 @@ classify(Function, function() {
     }
     
     var method = this,
-        args   = slice.call(arguments, 1);
+        args   = Array.slice(arguments, 1);
         
     return function() {
-      return method.apply(context, args.concat(slice.call(arguments)));
+      return method.apply(context, args.concat(Array.slice(arguments)));
     }
   });
   
@@ -23,10 +23,10 @@ classify(Function, function() {
     if (!arguments.length) return this;
     
     var method = this,
-        args   = slice.call(arguments);
+        args   = Array.slice(arguments);
         
     return function() {
-      return method.apply(null, args.concat(slice.call(arguments)));
+      return method.apply(null, args.concat(Array.slice(arguments)));
     }
   });
   
@@ -38,7 +38,7 @@ classify(Function, function() {
   // clear the timeout with `window.clearTimeout` before it runs.
   def('delay', function(timeout) {
     var method = this,
-        args   = slice.call(arguments, 1);
+        args   = Array.slice(arguments, 1);
         
     if (timeout <= 0) {
       return method.apply(null, args);
@@ -52,7 +52,7 @@ classify(Function, function() {
   
   // Schedules the function to run as soon as the interpreter is idle.
   def('defer', function() {
-    return this.delay.apply(this, [ 0.01 ].concat(slice.call(arguments)));
+    return this.delay.apply(this, [ 0.01 ].concat(Array.slice(arguments)));
   });
   
   // Schedules the function to run in the specified intervals of time, passing
@@ -63,7 +63,7 @@ classify(Function, function() {
   // clear the interval with `window.clearInterval` before it runs.
   def('periodical', function(interval) {
     var method = this,
-        args   = slice.call(arguments, 1);
+        args   = Array.slice(arguments, 1);
         
     return this.__intervalID__ = setInterval(function() {
       return method.apply(null, args);

@@ -43,6 +43,11 @@ extend(Object, function() {
     return toString.call(object) === '[object Date]';
   });
   
+  // Returns `true` if `object` is a regexp.
+  def('isRegExp', function(object) {
+    return toString.call(object) === '[object RegExp]';
+  });
+  
   // Returns `true` if `object` is an array.
   if (Object.isFunction(Array.isArray)) {
     def('isArray', Array.isArray);

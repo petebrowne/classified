@@ -97,6 +97,7 @@ describe('Object', function() {
         expect(Object.isUndefined({})).toBe(false);
         expect(Object.isUndefined([])).toBe(false);
         expect(Object.isUndefined(date)).toBe(false);
+        expect(Object.isUndefined(/asdf/)).toBe(false);
       });
     });
     
@@ -114,6 +115,7 @@ describe('Object', function() {
         expect(Object.isDefined({})).toBe(true);
         expect(Object.isDefined([])).toBe(true);
         expect(Object.isDefined(date)).toBe(true);
+        expect(Object.isDefined(/asdf/)).toBe(true);
       });
     });
     
@@ -131,6 +133,7 @@ describe('Object', function() {
         expect(Object.isString({})).toBe(false);
         expect(Object.isString([])).toBe(false);
         expect(Object.isString(date)).toBe(false);
+        expect(Object.isString(/asdf/)).toBe(false);
         expect(Object.isString(document)).toBe(false);
       });
     });
@@ -149,6 +152,7 @@ describe('Object', function() {
         expect(Object.isNumber({})).toBe(false);
         expect(Object.isNumber([])).toBe(false);
         expect(Object.isNumber(date)).toBe(false);
+        expect(Object.isNumber(/asdf/)).toBe(false);
         expect(Object.isNumber(document)).toBe(false);
       });
     });
@@ -167,6 +171,7 @@ describe('Object', function() {
         expect(Object.isArray(noop)).toBe(false);
         expect(Object.isArray({})).toBe(false);
         expect(Object.isArray(date)).toBe(false);
+        expect(Object.isArray(/asdf/)).toBe(false);
         expect(Object.isArray(document)).toBe(false);
       });
     });
@@ -185,6 +190,7 @@ describe('Object', function() {
         expect(Object.isFunction({})).toBe(false);
         expect(Object.isFunction([])).toBe(false);
         expect(Object.isFunction(date)).toBe(false);
+        expect(Object.isFunction(/asdf/)).toBe(false);
         expect(Object.isFunction(document)).toBe(false);
       });
     });
@@ -203,6 +209,7 @@ describe('Object', function() {
         expect(Object.isDate(noop)).toBe(false);
         expect(Object.isDate({})).toBe(false);
         expect(Object.isDate([])).toBe(false);
+        expect(Object.isDate(/asdf/)).toBe(false);
         expect(Object.isDate(document)).toBe(false);
       });
     });
@@ -221,6 +228,24 @@ describe('Object', function() {
         expect(Object.isObject(noop)).toBe(false);
         expect(Object.isObject([])).toBe(false);
         expect(Object.isObject(date)).toBe(false);
+        expect(Object.isObject(/asdf/)).toBe(false);
+      });
+    });
+    
+    describe('#isRegExp', function() {
+      it('returns true when the value is a regex', function() {
+        expect(Object.isRegExp(/asdf/)).toBe(true);
+      });
+      
+      it('returns false when the value is not an object', function() {
+        expect(Object.isRegExp(undef)).toBe(false);
+        expect(Object.isRegExp(null)).toBe(false);
+        expect(Object.isRegExp(false)).toBe(false);
+        expect(Object.isRegExp('')).toBe(false);
+        expect(Object.isRegExp(0)).toBe(false);
+        expect(Object.isRegExp(noop)).toBe(false);
+        expect(Object.isRegExp([])).toBe(false);
+        expect(Object.isRegExp(date)).toBe(false);
       });
     });
   });

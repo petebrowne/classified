@@ -1,6 +1,6 @@
 //--------------------------------------------------------------------------
 //
-//  Classified.js v0.5.2
+//  Classified.js v0.5.3
 //  http://github.com/petebrowne/classify
 //
 //  Copyright (c) 2010, Peter Browne
@@ -71,6 +71,11 @@ extend(Object, function() {
   // Returns `true` if `object` is a date.
   def('isDate', function(object) {
     return toString.call(object) === '[object Date]';
+  });
+  
+  // Returns `true` if `object` is a regexp.
+  def('isRegExp', function(object) {
+    return toString.call(object) === '[object RegExp]';
   });
   
   // Returns `true` if `object` is an array.

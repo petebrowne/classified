@@ -10,7 +10,7 @@ module('Inflector', function() {
   // references to the matched data from the rule.
   def('plural', function(rule, replacement) {
     if (!Object.isRegExp(rule)) rule = new RegExp(rule + '$');
-    this.plurals.unshift([ rule, replacement ]);
+    Inflector.plurals.unshift([ rule, replacement ]);
   });
   
   // Specifies a new singularization rule and its replacement.
@@ -19,7 +19,7 @@ module('Inflector', function() {
   // references to the matched data from the rule.
   def('singular', function(rule, replacement) {
     if (!Object.isRegExp(rule)) rule = new RegExp(rule + '$');
-    this.singulars.unshift([ rule, replacement ]);
+    Inflector.singulars.unshift([ rule, replacement ]);
   });
   
   // Specifies a new irregular that applies to both pluralization
@@ -27,10 +27,10 @@ module('Inflector', function() {
   // for strings, not regular expressions. You simply pass the
   // irregular in singular and plural form.
   def('irregular', function(singular, plural) {
-    this.plural(
+    Inflector.plural(
       new RegExp('(' + singular.charAt(0) + ')' + singular.slice(1) + '$', 'i'), '$1' + plural.slice(1)
     );
-    this.singular(
+    Inflector.singular(
       new RegExp('(' + plural.charAt(0) + ')' + plural.slice(1) + '$', 'i'), '$1' + singular.slice(1)
     );
   });
@@ -38,7 +38,7 @@ module('Inflector', function() {
   // Add uncountable words that shouldn't cannot be converted
   // to singular or plural forms.
   def('uncountable', function() {
-    this.uncountables = this.uncountables.concat(Array.slice(arguments));
+    Inflector.uncountables = Inflector.uncountables.concat(Array.slice(arguments));
   });
   
   // Returns the plural form of the word in the string.

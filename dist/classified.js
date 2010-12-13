@@ -786,6 +786,16 @@ classify(String, function() {
     return this.replace(/[-_]+/g, ' ').capitalize();
   });
   
+  // Returns the plural form of the word in the string.
+  def('pluralize', function() {
+    return Inflector.pluralize(this);
+  });
+  
+  // The reverse of `pluralize`, returns the singular form of a word in a string.
+  def('singularize', function() {
+    return Inflector.singularize(this);
+  });
+  
   // Capitalizes all the words and replaces some characters in the string to create a nicer looking title.
   def('titleize', function() {
     return this.underscore().humanize().replace(/\b('?[a-z])/g, function(match, word) {

@@ -160,6 +160,18 @@ describe('String', function() {
       });
     });
     
+    describe('#pluralize', function() {
+      it('pluralizes words', function() {
+        expect('category'.pluralize()).toEqual('categories');
+      });
+    });
+    
+    describe('#singularize', function() {
+      it('singularizes words', function() {
+        expect('people'.singularize()).toEqual('person');
+      });
+    });
+    
     describe('#titleize', function() {
       it('capitalizes each word', function() {
         expect('man from the boondocks'.titleize()).toEqual('Man From The Boondocks');

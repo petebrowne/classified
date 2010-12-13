@@ -102,6 +102,30 @@ describe('String', function() {
       });
     });
     
+    describe('constantize', function() {
+      it('returns the constant represented by the string', function() {
+        expect('String'.constantize()).toBe(String);
+      });
+      
+      it('returns properties within namespaces', function() {
+        expect('Math.sin'.constantize()).toBe(Math.sin);
+      });
+      
+      it('returns the constant even within namespaces', function() {
+        var LatLng = function() {};
+        window.google = { 'maps' : { 'LatLng' : LatLng } };
+        expect('google.maps.LatLng'.constantize()).toBe(LatLng);
+      });
+      
+      it('returns undefined if the constant does not exist', function() {
+        expect('Does.Not.Exist'.constantize()).toBeUndefined();
+      });
+      
+      it('returns undefined if the string is nothing like a constant name', function() {
+        expect('..wtf is. this?'.constantize()).toBeUndefined();
+      });
+    });
+    
     describe('#dasherize', function() {
       it("deos not affect strings that aren't camelized", function() {
         expect(''.dasherize()).toEqual('');

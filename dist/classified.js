@@ -682,6 +682,20 @@ classify(String, function() {
     return this.charAt(0).toUpperCase() + this.substring(1);
   });
   
+  // Tries to find a constant with the name specified. The name
+  // is assumed to be the one of a top-level constant.
+  def('constantize', function() {
+    var names    = this.split('.'),
+        constant = global;
+        
+    names.each(function(name) {
+      constant = constant[name];
+      if (Object.isUndefined(constant)) throw $break;
+    });
+        
+    return constant;
+  });
+  
   // Converts a camelized string into a series of words separated by an
   // dash (`'-'`). Also replaces underscores `'_'` with dashes.
   def('dasherize', function() {
@@ -693,7 +707,7 @@ classify(String, function() {
   
   // Capitalizes the first word and turns underscores and dashes into spaces.
   def('humanize', function() {
-    return this.replace(/[_|-]+/g, ' ').capitalize();
+    return this.replace(/[-_]+/g, ' ').capitalize();
   });
   
   // Capitalizes all the words and replaces some characters in the string to create a nicer looking title.

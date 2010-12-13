@@ -1,17 +1,38 @@
 describe('Inflector', function() {
   describe('.plural', function() {
     it('adds a new plural rule', function() {
-      Inflector.plural('singular', 'plural');
-      expect(Inflector.plurals[0][0].test('singular')).toBe(true);
-      expect(Inflector.plurals[0][1]).toEqual('plural');
+      Inflector.plural('plural', 'plurals');
+      expect(Inflector.plurals[0][0].test('plural')).toBe(true);
+      expect(Inflector.plurals[0][1]).toEqual('plurals');
     });
   });
   
   describe('.singular', function() {
     it('adds a new singular rule', function() {
-      Inflector.singular('plural', 'singular');
-      expect(Inflector.singulars[0][0].test('plural')).toBe(true);
+      Inflector.singular('singulars', 'singular');
+      expect(Inflector.singulars[0][0].test('singulars')).toBe(true);
       expect(Inflector.singulars[0][1]).toEqual('singular');
+    });
+  });
+  
+  describe('.irregular', function() {
+    it('adds a new plural rule', function() {
+      Inflector.irregular('singular', 'plural');
+      expect(Inflector.plurals[0][0].test('singular')).toBe(true);
+      expect(Inflector.plurals[0][1]).toEqual('$1lural');
+    });
+    
+    it('adds a new singular rule', function() {
+      Inflector.irregular('singular', 'plural');
+      expect(Inflector.singulars[0][0].test('plural')).toBe(true);
+      expect(Inflector.singulars[0][1]).toEqual('$1ingular');
+    });
+  });
+  
+  describe('.uncountable', function() {
+    it('adds an uncountable form', function() {
+      Inflector.uncountable('blah');
+      expect(Inflector.uncountables.last()).toEqual('blah');
     });
   });
   

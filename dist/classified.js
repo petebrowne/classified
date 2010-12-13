@@ -384,6 +384,82 @@ module('Events', function() {
   });
 });
 
+module('Inflector', function() {
+  
+  this.plurals      = [];
+  this.singulars    = [];
+  this.uncountables = [];
+  
+  // Specifies a new pluralization rule and its replacement.
+  // The rule can either be a string or a regular expression.
+  // The replacement should always be a string that may include
+  // references to the matched data from the rule.
+  def('plural', function(rule, replacement) {
+    if (!Object.isRegExp(rule)) rule = new RegExp(rule + '$');
+    this.plurals.unshift([ rule, replacement ]);
+  });
+  
+  // Specifies a new singularization rule and its replacement.
+  // The rule can either be a string or a regular expression.
+  // The replacement should always be a string that may include
+  // references to the matched data from the rule.
+  def('singular', function(rule, replacement) {
+    if (!Object.isRegExp(rule)) rule = new RegExp(rule + '$');
+    this.singulars.unshift([ rule, replacement ]);
+  });
+  
+  // Specifies a new irregular that applies to both pluralization
+  // and singularization at the same time. This can only be used
+  // for strings, not regular expressions. You simply pass the
+  // irregular in singular and plural form.
+  def('irregular', function(singular, plural) {
+    this.plural(
+      new RegExp('(' + singular.charAt(0) + ')' + singular.slice(1) + '$', 'i'), '$1' + plural.slice(1)
+    );
+    this.singular(
+      new RegExp('(' + plural.charAt(0) + ')' + plural.slice(1) + '$', 'i'), '$1' + singular.slice(1)
+    );
+  });
+  
+  // Add uncountable words that shouldn't cannot be converted
+  // to singular or plural forms.
+  def('uncountable', function() {
+    this.uncountables = this.uncountables.concat(Array.slice(arguments));
+  });
+  
+  // Returns the plural form of the word in the string.
+  def('pluralize', function(string) {
+    var word = string.split(/\s/).pop();
+    
+    if (Inflector.uncountables.contains(word.toLowerCase())) {
+      return string;
+    }
+    
+    var inflection = Inflector.plurals.find(function(plural) {
+      return plural[0].test(word);
+    });
+    if (inflection) return string.replace(inflection[0], inflection[1]);
+    
+    return string;
+  });
+  
+  // The reverse of `pluralize`, returns the singular form of a word in a string.
+  def('singularize', function(string) {
+    var word = string.split(/\s/).pop();
+    
+    if (Inflector.uncountables.contains(word.toLowerCase())) {
+      return string;
+    }
+    
+    var inflection = Inflector.singulars.find(function(singular) {
+      return singular[0].test(word);
+    });
+    if (inflection) return string.replace(inflection[0], inflection[1]);
+    
+    return string;
+  });
+});
+
 classify(Array, function() {
   include(Enumerable);
   
@@ -727,5 +803,69 @@ classify(String, function() {
                .toLowerCase();
   });
 });
+
+(function(inflect) {
+  inflect.plural(/$/, 's');
+  inflect.plural(/s$/i, 's');
+  inflect.plural(/(ax|test)is$/i, '$1es');
+  inflect.plural(/(octop|vir)us$/i, '$1i');
+  inflect.plural(/(alias|status)$/i, '$1es');
+  inflect.plural(/(bu)s$/i, '$1ses');
+  inflect.plural(/(buffal|tomat)o$/i, '$1oes');
+  inflect.plural(/([ti])um$/i, '$1a');
+  inflect.plural(/sis$/i, 'ses');
+  inflect.plural(/(?:([^f])fe|([lr])f)$/i, '$1$2ves');
+  inflect.plural(/(hive)$/i, '$1s');
+  inflect.plural(/([^aeiouy]|qu)y$/i, '$1ies');
+  inflect.plural(/(x|ch|ss|sh)$/i, '$1es');
+  inflect.plural(/(matr|vert|ind)(?:ix|ex)$/i, '$1ices');
+  inflect.plural(/([m|l])ouse$/i, '$1ice');
+  inflect.plural(/^(ox)$/i, '$1en');
+  inflect.plural(/(quiz)$/i, '$1zes');
+
+  inflect.singular(/s$/i, '');
+  inflect.singular(/(n)ews$/i, '$1ews');
+  inflect.singular(/([ti])a$/i, '$1um');
+  inflect.singular(/((a)naly|(b)a|(d)iagno|(p)arenthe|(p)rogno|(s)ynop|(t)he)ses$/i, '$1$2sis');
+  inflect.singular(/(^analy)ses$/i, '$1sis');
+  inflect.singular(/([^f])ves$/i, '$1fe');
+  inflect.singular(/(hive)s$/i, '$1');
+  inflect.singular(/(tive)s$/i, '$1');
+  inflect.singular(/([lr])ves$/i, '$1f');
+  inflect.singular(/([^aeiouy]|qu)ies$/i, '$1y');
+  inflect.singular(/(s)eries$/i, '$1eries');
+  inflect.singular(/(m)ovies$/i, '$1ovie');
+  inflect.singular(/(x|ch|ss|sh)es$/i, '$1');
+  inflect.singular(/([m|l])ice$/i, '$1ouse');
+  inflect.singular(/(bus)es$/i, '$1');
+  inflect.singular(/(o)es$/i, '$1');
+  inflect.singular(/(shoe)s$/i, '$1');
+  inflect.singular(/(cris|ax|test)es$/i, '$1is');
+  inflect.singular(/(octop|vir)i$/i, '$1us');
+  inflect.singular(/(alias|status)es$/i, '$1');
+  inflect.singular(/^(ox)en/i, '$1');
+  inflect.singular(/(vert|ind)ices$/i, '$1ex');
+  inflect.singular(/(matr)ices$/i, '$1ix');
+  inflect.singular(/(quiz)zes$/i, '$1');
+  inflect.singular(/(database)s$/i, '$1');
+
+  inflect.irregular('person', 'people');
+  inflect.irregular('man', 'men');
+  inflect.irregular('child', 'children');
+  inflect.irregular('sex', 'sexes');
+  inflect.irregular('move', 'moves');
+  inflect.irregular('cow', 'kine');
+
+  inflect.uncountable(
+    'equipment',
+    'information',
+    'rice',
+    'money',
+    'species',
+    'series',
+    'fish',
+    'sheep'
+  );
+})(Inflector);
 
 })();

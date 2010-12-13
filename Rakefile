@@ -5,11 +5,13 @@ FILES = %w(
   src/extensions/object.js
   src/modules/enumerable.js
   src/modules/events.js
+  src/modules/inflector.js
   src/extensions/array.js
   src/extensions/function.js
   src/extensions/number.js
   src/extensions/regexp.js
   src/extensions/string.js
+  src/modules/inflections.js
   src/footer.js
 )
 

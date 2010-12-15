@@ -292,6 +292,25 @@ describe('Object', function() {
       });
     });
     
+    describe('.isBoolean', function() {
+      it('returns true when the value is a true boolean', function() {
+        expect(Object.isBoolean(true)).toBe(true);
+        expect(Object.isBoolean(false)).toBe(true);
+      });
+      
+      it('returns false when the value is not an object', function() {
+        expect(Object.isBoolean(undef)).toBe(false);
+        expect(Object.isBoolean(null)).toBe(false);
+        expect(Object.isBoolean('')).toBe(false);
+        expect(Object.isBoolean(0)).toBe(false);
+        expect(Object.isBoolean(noop)).toBe(false);
+        expect(Object.isBoolean({})).toBe(false);
+        expect(Object.isBoolean([])).toBe(false);
+        expect(Object.isBoolean(date)).toBe(false);
+        expect(Object.isBoolean(/asdf/)).toBe(false);
+      });
+    });
+    
     describe('.isRegExp', function() {
       it('returns true when the value is a regex', function() {
         expect(Object.isRegExp(/asdf/)).toBe(true);

@@ -19,13 +19,18 @@ extend(Object, function() {
   
   // Returns `true` if `object` is not undefined.
   def('isDefined', function(object) {
-    return !Object.isUndefined(object);
+    return typeof object !== 'undefined';
   });
   
   // Returns `true` if `object` is an object.
   def('isObject', function(object) {
     if (object == null) return false;
     return toString.call(object) === '[object Object]';
+  });
+  
+  // Returns `true` if `object` is a true boolean.
+  def('isBoolean', function(object) {
+    return toString.call(object) === '[object Boolean]';
   });
   
   // Returns `true` if `object` is a function.

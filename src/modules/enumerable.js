@@ -2,9 +2,7 @@ module('Enumerable', function() {
   
   // A function that just returns the first argument.
   // Used internally when functions aren't given to a looping function.
-  var $identity = function(item) {
-    return item;
-  };
+  function $identity(item) { return item; }
   
   // Calls `iterator` for each item in the collection.
   def('each', function(iterator, context) {
@@ -15,9 +13,7 @@ module('Enumerable', function() {
       });
     }
     catch (error) {
-      if (error != $break) {
-        throw error;
-      }
+      if (error != $break) throw error;
     }
     return this;
   });
@@ -32,8 +28,8 @@ module('Enumerable', function() {
     iterator = iterator || $identity;
     var result = true;
     this.each(function(value, index) {
-      result = result && !!iterator.call(context, value, index);
-      if (!result) {
+      if (!iterator.call(context, value, index)) {
+        result = false;
         throw $break;
       }
     });
@@ -49,9 +45,7 @@ module('Enumerable', function() {
     iterator = iterator || $identity;
     var result = false;
     this.each(function(value, index) {
-      if (result = !!iterator.call(context, value, index)) {
-        throw $break;
-      }
+      if (result = !!iterator.call(context, value, index)) throw $break;
     });
     return result;
   });
@@ -95,16 +89,9 @@ module('Enumerable', function() {
     if (Object.isFunction(this.indexOf)) {
       return this.indexOf(item) != -1;
     }
-
     var found = false;
     this.each(function(value) {
-      if (Object.isDefined(value.value)) {
-        value = value.value;
-      }
-      if (value == item) {
-        found = true;
-        throw $break;
-      }
+      if (found = (value == item)) throw $break;
     });
     return found;
   });

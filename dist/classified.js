@@ -30,12 +30,17 @@ var global    = this,
     
 extend(Object, function() {
   
+  // Shortcut to the `toString` method used for type checking.
+  var toString = Object.prototype.toString;
+  
+  // An iterator function where the value of the key/value
+  // pair is returned. Used in Enumerable Object functions
+  // when an iterator is not given.
+  function $identity(key, value) { return value; }
+  
   //----------------------------------
   //  Typecasting Methods
   //----------------------------------
-  
-  // Shortcut to the toString method used for type checking.
-  var toString = Object.prototype.toString;
   
   // Returns `true` if `object` is of type `undefined`.
   def('isUndefined', function(object) {
@@ -114,12 +119,52 @@ extend(Object, function() {
   
   // Loops through all the properties of a given object.
   def('each', function(object, iterator, context) {
-    for (var property in object) {
-      if (object.hasOwnProperty(property)) {
-        iterator.call(context, property, object[property]);
+    try {
+      for (var property in object) {
+        if (object.hasOwnProperty(property)) {
+          iterator.call(context, property, object[property]);
+        }
       }
     }
+    catch (error) {
+      if (error !== $break) throw error;
+    }
   });
+  
+  // Returns true if every value in the object satisfies
+  // the provided testing function.
+  def('all', function(object, iterator, context) {
+    iterator = iterator || $identity;
+    var result = true;
+    Object.each(object, function(key, value) {
+      if (!iterator.call(context, key, value)) {
+        result = false;
+        throw $break;
+      }
+    });
+    return result;
+  });
+  alias('every', 'all');
+  
+  // Returns true if at least one value in the object satisfies
+  // the provided testing function.
+  def('any', function(object, iterator, context) {
+    iterator = iterator || $identity;
+    var result = false;
+    Object.each(object, function(key, value) {
+      if (result = !!iterator.call(context, key, value)) throw $break;
+    });
+    return result;
+  });
+  alias('some', 'any');
+  
+  // Tests for the presence of a specified value in the object.
+  def('include', function(object, value) {
+    return Object.any(object, function(key, objectValue) {
+      return objectValue === value;
+    });
+  });
+  alias('contains', 'include');
   
   // Returns an array of the object's property names.
   if (!Object.isFunction(Object.keys)) {
@@ -147,9 +192,7 @@ module('Enumerable', function() {
   
   // A function that just returns the first argument.
   // Used internally when functions aren't given to a looping function.
-  var $identity = function(item) {
-    return item;
-  };
+  function $identity(item) { return item; }
   
   // Calls `iterator` for each item in the collection.
   def('each', function(iterator, context) {
@@ -160,9 +203,7 @@ module('Enumerable', function() {
       });
     }
     catch (error) {
-      if (error != $break) {
-        throw error;
-      }
+      if (error != $break) throw error;
     }
     return this;
   });
@@ -177,8 +218,8 @@ module('Enumerable', function() {
     iterator = iterator || $identity;
     var result = true;
     this.each(function(value, index) {
-      result = result && !!iterator.call(context, value, index);
-      if (!result) {
+      if (!iterator.call(context, value, index)) {
+        result = false;
         throw $break;
       }
     });
@@ -194,9 +235,7 @@ module('Enumerable', function() {
     iterator = iterator || $identity;
     var result = false;
     this.each(function(value, index) {
-      if (result = !!iterator.call(context, value, index)) {
-        throw $break;
-      }
+      if (result = !!iterator.call(context, value, index)) throw $break;
     });
     return result;
   });
@@ -240,16 +279,9 @@ module('Enumerable', function() {
     if (Object.isFunction(this.indexOf)) {
       return this.indexOf(item) != -1;
     }
-
     var found = false;
     this.each(function(value) {
-      if (Object.isDefined(value.value)) {
-        value = value.value;
-      }
-      if (value == item) {
-        found = true;
-        throw $break;
-      }
+      if (found = (value == item)) throw $break;
     });
     return found;
   });

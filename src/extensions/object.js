@@ -1,11 +1,16 @@
 extend(Object, function() {
   
+  // Shortcut to the `toString` method used for type checking.
+  var toString = Object.prototype.toString;
+  
+  // An iterator function where the value of the key/value
+  // pair is returned. Used in Enumerable Object functions
+  // when an iterator is not given.
+  function $identity(key, value) { return value; }
+  
   //----------------------------------
   //  Typecasting Methods
   //----------------------------------
-  
-  // Shortcut to the toString method used for type checking.
-  var toString = Object.prototype.toString;
   
   // Returns `true` if `object` is of type `undefined`.
   def('isUndefined', function(object) {
@@ -84,12 +89,52 @@ extend(Object, function() {
   
   // Loops through all the properties of a given object.
   def('each', function(object, iterator, context) {
-    for (var property in object) {
-      if (object.hasOwnProperty(property)) {
-        iterator.call(context, property, object[property]);
+    try {
+      for (var property in object) {
+        if (object.hasOwnProperty(property)) {
+          iterator.call(context, property, object[property]);
+        }
       }
     }
+    catch (error) {
+      if (error !== $break) throw error;
+    }
   });
+  
+  // Returns true if every value in the object satisfies
+  // the provided testing function.
+  def('all', function(object, iterator, context) {
+    iterator = iterator || $identity;
+    var result = true;
+    Object.each(object, function(key, value) {
+      if (!iterator.call(context, key, value)) {
+        result = false;
+        throw $break;
+      }
+    });
+    return result;
+  });
+  alias('every', 'all');
+  
+  // Returns true if at least one value in the object satisfies
+  // the provided testing function.
+  def('any', function(object, iterator, context) {
+    iterator = iterator || $identity;
+    var result = false;
+    Object.each(object, function(key, value) {
+      if (result = !!iterator.call(context, key, value)) throw $break;
+    });
+    return result;
+  });
+  alias('some', 'any');
+  
+  // Tests for the presence of a specified value in the object.
+  def('include', function(object, value) {
+    return Object.any(object, function(key, objectValue) {
+      return objectValue === value;
+    });
+  });
+  alias('contains', 'include');
   
   // Returns an array of the object's property names.
   if (!Object.isFunction(Object.keys)) {

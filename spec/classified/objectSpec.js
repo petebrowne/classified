@@ -23,30 +23,90 @@ describe('Object', function() {
     
     it('returns an object equal to the given properties', function() {
       var properties = { 'foo' : 'bar' };
-      
       expect(Object.clone(properties)).toEqual(properties);
     });
     
     it('returns a clone of the given object', function() {
       var properties = { 'foo' : 'bar' };
-      
       expect(Object.clone(properties)).not.toBe(properties);
     });
   });
   
-  describe('.each', function() {
-    it('loops over each property of an object', function() {
-      var object = { 'a' : 1, 'b' : 2 };
-      var keys   = [];
-      var values = [];
-      
-      Object.each(object, function(key, value) {
-        keys.push(key);
-        values.push(value);
+  describe('Enumberable methods', function() {
+    describe('.each', function() {
+      it('loops over each property of an object', function() {
+        var object = { 'a' : 1, 'b' : 2 };
+        var keys   = [];
+        var values = [];
+        Object.each(object, function(key, value) {
+          keys.push(key);
+          values.push(value);
+        });
+        expect(keys).toEqual([ 'a', 'b' ]);
+        expect(values).toEqual([ 1, 2 ]);
       });
       
-      expect(keys).toEqual([ 'a', 'b' ]);
-      expect(values).toEqual([ 1, 2 ]);
+      it('uses $break to stop iterators', function() {
+        var object     = { 'a' : 1, 'b' : 2 };
+        var iterations = 0;
+        Object.each(object, function(key, value) {
+          iterations++;
+          if (value == 1) throw $break;
+        });
+        expect(iterations).toEqual(1);
+      });
+    });
+  
+    describe('.all', function() {
+      it('returns false if anything returns false', function() {
+        var object = { 'a' : 'a', 'b' : 'b', 'c' : '1' };
+        expect(Object.all(object, function(key, value) {
+          return value.match(/\D/);
+        })).toBe(false);
+      });
+    
+      it('returns true if everything returns true', function() {
+        var object = { 'a' : 'a', 'b' : 'b', 'c' : 'c' };
+        expect(Object.all(object, function(key, value) {
+          return value.match(/\D/);
+        })).toBe(true);
+      });
+    
+      it('evaluates without an iterator', function() {
+        expect(Object.all({ 'a' : 1, 'b' : 2 })).toBe(true);
+        expect(Object.all({ 'a' : 0, 'b' : 1 })).toBe(false);
+      });
+    });
+  
+    describe('.any', function() {
+      it('returns true if anything returns true', function() {
+        var object = { 'a' : 'a', 'b' : 'b', 'c' : '1' };
+        expect(Object.any(object, function(key, value) {
+          return value.match(/\d/);
+        })).toBe(true);
+      });
+    
+      it('returns false if everything returns false', function() {
+        var object = { 'a' : 'a', 'b' : 'b', 'c' : 'c' };
+        expect(Object.any(object, function(key, value) {
+          return value.match(/\d/);
+        })).toBe(false);
+      });
+    
+      it('evaluates without an iterator', function() {
+        expect(Object.any({ 'a' : 0, 'b' : 1 })).toBe(true);
+        expect(Object.any({ 'a' : 0, 'b' : 0 })).toBe(false);
+      });
+    });
+    
+    describe('.include', function() {
+      it('returns true if it has the item', function() {
+        expect(Object.include({ 'a' : 1, 'b' : 2 }, 2)).toBe(true);
+      });
+    
+      it("returns false if it doesn't have the item", function() {
+        expect(Object.include({ 'a' : 1, 'b' : 2 }, 3)).toBe(false);
+      });
     });
   });
   
@@ -83,7 +143,7 @@ describe('Object', function() {
     var undef = noop();
     var date  = new Date();
     
-    describe('#isUndefined', function() {
+    describe('.isUndefined', function() {
       it('returns true when the value is undefined', function() {
         expect(Object.isUndefined(undef)).toBe(true);
       });
@@ -101,7 +161,7 @@ describe('Object', function() {
       });
     });
     
-    describe('#isDefined', function() {
+    describe('.isDefined', function() {
       it('returns false when the value is undefined', function() {
         expect(Object.isDefined(undef)).toBe(false);
       });
@@ -119,7 +179,7 @@ describe('Object', function() {
       });
     });
     
-    describe('#isString', function() {
+    describe('.isString', function() {
       it('returns true when the value is a string', function() {
         expect(Object.isString('')).toBe(true);
       });
@@ -138,7 +198,7 @@ describe('Object', function() {
       });
     });
     
-    describe('#isNumber', function() {
+    describe('.isNumber', function() {
       it('returns true when the value is a number', function() {
         expect(Object.isNumber(0)).toBe(true);
       });
@@ -157,7 +217,7 @@ describe('Object', function() {
       });
     });
     
-    describe('#isArray', function() {
+    describe('.isArray', function() {
       it('returns true when the value is an array', function() {
         expect(Object.isArray([])).toBe(true);
       });
@@ -176,7 +236,7 @@ describe('Object', function() {
       });
     });
     
-    describe('#isFunction', function() {
+    describe('.isFunction', function() {
       it('returns true when the value is a function', function() {
         expect(Object.isFunction(noop)).toBe(true);
       });
@@ -195,7 +255,7 @@ describe('Object', function() {
       });
     });
     
-    describe('#isDate', function() {
+    describe('.isDate', function() {
       it('returns true when the value is a date', function() {
         expect(Object.isDate(date)).toBe(true);
       });
@@ -214,7 +274,7 @@ describe('Object', function() {
       });
     });
     
-    describe('#isObject', function() {
+    describe('.isObject', function() {
       it('returns true when the value is an object', function() {
         expect(Object.isObject({})).toBe(true);
       });
@@ -232,7 +292,7 @@ describe('Object', function() {
       });
     });
     
-    describe('#isRegExp', function() {
+    describe('.isRegExp', function() {
       it('returns true when the value is a regex', function() {
         expect(Object.isRegExp(/asdf/)).toBe(true);
       });

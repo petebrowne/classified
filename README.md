@@ -1,12 +1,12 @@
-Classified
-==========
+Classified.js
+=============
 
-_A Javascript Library of Native Object Extensions_
+_A Library of Native Javascript Extensions_
 
-Classified is a bare bones set of native Javascript object extensions without any dependencies. It uses [Classify](http://github.com/peterbrowne/classify) for adding the methods and aliases. It is inspired by [Prototype](http://www.prototypejs.org/) and [Underscore](http://documentcloud.github.com/underscore/).
-  
+[http://classified.petebrowne.com/](http://classified.petebrowne.com/)
 
-Copyright
----------
+Classified is a collection of native extensions and useful modules. It is built using [Classify](http://classify.petebrowne.com), but you don't really need to use the Classify syntax to use the features of Classified.
 
-Copyright (c) 2010 [Peter Browne](http://petebrowne.com). See LICENSE for details.
+For usage, API docs, and the changelog, see: [http://classified.petebrowne.com/](http://classified.petebrowne.com/)
+
+Copyright (c) 2010 [Pete Browne](http://petebrowne.com). See LICENSE for details.

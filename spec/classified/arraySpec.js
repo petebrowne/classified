@@ -1,5 +1,10 @@
 describe('Array', function() {
   describe('.slice', function() {
+    it('slices arrays', function() {
+      expect(Array.prototype.slice.call([ 1, 2, 3 ], 1)).toEqual([ 2, 3 ]);
+      expect(Array.prototype.slice.call([ 1, 2, 3 ], 1, 2)).toEqual([ 2 ]);
+    });
+    
     it('turns arguments into an array', function() {
       var args;
       (function() {

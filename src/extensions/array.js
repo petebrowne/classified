@@ -4,6 +4,11 @@ classify(Array, function() {
   // Convenience method for slicing/cloning arrays. Useful
   // for turning arguments into an array.
   def(this, 'slice', function(array, start, end) {
+    // IE freaks out when start is undefined
+    // Doing it this way avoids using Array.prototype.slice twice.
+    if (Object.isUndefined(start)) {
+      return Array.prototype.slice.call(array);
+    }
     return Array.prototype.slice.call(array, start, end);
   });
   

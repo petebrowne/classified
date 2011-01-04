@@ -54,15 +54,10 @@ classify(String, function() {
   // Tries to find a constant with the name specified. The name
   // is assumed to be the one of a top-level constant.
   def('constantize', function() {
-    var names    = this.split('.'),
-        constant = global;
-        
-    names.each(function(name) {
-      constant = constant[name];
+    return this.split('.').inject(global, function(constant, name) {
       if (Object.isUndefined(constant)) throw $break;
+      return constant[name];
     });
-        
-    return constant;
   });
   
   // Converts a camelized string into a series of words separated by an

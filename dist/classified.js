@@ -1,6 +1,6 @@
 //--------------------------------------------------------------------------
 //
-//  Classified.js v0.5.6
+//  Classified.js v0.5.7
 //  http://github.com/petebrowne/classified
 //
 //  Copyright (c) 2010, Peter Browne
@@ -503,6 +503,11 @@ classify(Array, function() {
   // Convenience method for slicing/cloning arrays. Useful
   // for turning arguments into an array.
   def(this, 'slice', function(array, start, end) {
+    // IE freaks out when start is undefined
+    // Doing it this way avoids using Array.prototype.slice twice.
+    if (Object.isUndefined(start)) {
+      return Array.prototype.slice.call(array);
+    }
     return Array.prototype.slice.call(array, start, end);
   });
   
@@ -798,15 +803,10 @@ classify(String, function() {
   // Tries to find a constant with the name specified. The name
   // is assumed to be the one of a top-level constant.
   def('constantize', function() {
-    var names    = this.split('.'),
-        constant = global;
-        
-    names.each(function(name) {
-      constant = constant[name];
+    return this.split('.').inject(global, function(constant, name) {
       if (Object.isUndefined(constant)) throw $break;
+      return constant[name];
     });
-        
-    return constant;
   });
   
   // Converts a camelized string into a series of words separated by an
